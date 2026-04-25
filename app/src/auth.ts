@@ -76,12 +76,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user }) {
       if (!PAYMENT_GATING_ENABLED) return true;
       const email = user?.email?.trim().toLowerCase();
+      // eslint-disable-next-line no-console
+      console.log(`[auth] signIn check: email=${email} admin_count=${ADMIN_EMAILS.length} admin_match=${email ? ADMIN_EMAILS.includes(email) : false}`);
       if (!email) return false;
       if (ADMIN_EMAILS.includes(email)) return true;
 
       const paid = await db.query.paidUsers.findFirst({
         where: and(eq(paidUsers.email, email), isNull(paidUsers.refundedAt)),
       });
+      // eslint-disable-next-line no-console
+      console.log(`[auth] paid lookup for ${email}: ${paid ? "FOUND" : "NOT FOUND"}`);
       // Returning a string redirects to that URL (with ?error=...).
       return paid ? true : "/login/not-paid";
     },
