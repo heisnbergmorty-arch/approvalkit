@@ -7,6 +7,7 @@ import Link from "next/link";
 import { UploadAssetForm } from "./upload-form";
 import { CopyButton } from "./copy-button";
 import { ProjectActions } from "./project-actions";
+import { SendLinkButton } from "./send-link-button";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -58,6 +59,9 @@ export default async function ProjectDetail({ params }: Props) {
           >
             ⬇ Export approval log (CSV)
           </a>
+        </div>
+        <div className="mt-3">
+          <SendLinkButton projectId={project.id} clientEmail={project.clientEmail} />
         </div>
       </section>
 

@@ -8,8 +8,16 @@ import { projects, assets } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { requireAgency } from "@/lib/session";
 import { deleteObject } from "@/lib/storage";
+import { sendReviewLink as sendReviewLinkAction } from "@/lib/actions";
 
 const idSchema = z.string().uuid();
+
+export async function sendReviewLinkToClient(projectId: string) {
+  const id = idSchema.parse(projectId);
+  await sendReviewLinkAction(id);
+  revalidatePath(`/dashboard/projects/${id}`);
+  return { ok: true };
+}
 
 export async function archiveProject(projectId: string) {
   const id = idSchema.parse(projectId);
