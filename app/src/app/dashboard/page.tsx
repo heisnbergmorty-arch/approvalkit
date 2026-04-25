@@ -5,7 +5,15 @@ import { agencies, projects, assets, approvals, comments } from "@/db/schema";
 import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import Link from "next/link";
 
-export default async function DashboardPage() {
+type SearchParams = { view?: string };
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const sp = await searchParams;
+  const view = sp.view === "archived" ? "archived" : sp.view === "all" ? "all" : "active";
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -30,11 +38,20 @@ export default async function DashboardPage() {
     );
   }
 
-  const projectList = await db.query.projects.findMany({
+  const allProjects = await db.query.projects.findMany({
     where: eq(projects.agencyId, agency.id),
     orderBy: (p, { desc }) => [desc(p.createdAt)],
-    limit: 50,
+    limit: 200,
   });
+  const counts = {
+    active: allProjects.filter((p) => p.status === "active").length,
+    archived: allProjects.filter((p) => p.status === "archived").length,
+    all: allProjects.length,
+  };
+  const projectList =
+    view === "all"
+      ? allProjects
+      : allProjects.filter((p) => p.status === view);
 
   const projectIds = projectList.map((p) => p.id);
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -81,7 +98,18 @@ export default async function DashboardPage() {
         <StatCard label="New comments" value={stats.comments} hint="from clients · 7d" />
       </div>
 
+      <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">
+        <ViewTab current={view} value="active" label="Active" count={counts.active} />
+        <ViewTab current={view} value="archived" label="Archived" count={counts.archived} />
+        <ViewTab current={view} value="all" label="All" count={counts.all} />
+      </div>
+
       {projectList.length === 0 ? (
+        view !== "active" || allProjects.length > 0 ? (
+          <div className="mt-8 rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+            No {view} projects.
+          </div>
+        ) : (
         <div className="mt-8 rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
           <h2 className="text-lg font-semibold">Create your first project</h2>
           <p className="mt-2 text-sm text-slate-600">
@@ -102,6 +130,7 @@ export default async function DashboardPage() {
             to see what your clients will see.
           </p>
         </div>
+        )
       ) : (
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           {projectList.map((p) => {
@@ -294,5 +323,31 @@ function StatCard({ label, value, hint }: { label: string; value: number; hint: 
       <div className="mt-1 text-2xl font-bold">{value}</div>
       <div className="text-xs text-slate-400">{hint}</div>
     </div>
+  );
+}
+
+function ViewTab({
+  current,
+  value,
+  label,
+  count,
+}: {
+  current: string;
+  value: string;
+  label: string;
+  count: number;
+}) {
+  const active = current === value;
+  return (
+    <Link
+      href={value === "active" ? "/dashboard" : `/dashboard?view=${value}`}
+      className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+        active
+          ? "border-brand-500 bg-brand-50 text-brand-700"
+          : "border-slate-200 bg-white text-slate-600 hover:border-slate-400"
+      }`}
+    >
+      {label} <span className="ml-1 text-slate-400">{count}</span>
+    </Link>
   );
 }

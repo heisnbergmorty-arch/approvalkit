@@ -29,6 +29,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <Link href="/roadmap" className="hover:text-slate-900">
               Roadmap
             </Link>
+            <Link href="/changelog" className="hover:text-slate-900">
+              Changelog
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden text-xs text-slate-500 sm:inline">
