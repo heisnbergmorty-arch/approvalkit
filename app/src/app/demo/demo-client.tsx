@@ -257,6 +257,7 @@ export default function DemoClient() {
   const [pinDraft, setPinDraft] = useState<{ assetId: string; xPct: number; yPct: number } | null>(null);
   const [pinBody, setPinBody] = useState("");
   const [showCustomizer, setShowCustomizer] = useState(false);
+  const [showFlow, setShowFlow] = useState(true);
   const [shared, setShared] = useState(false);
 
   // Rebuild assets whenever brand changes (so SVGs use the new color), preserving status/comments
@@ -388,9 +389,49 @@ export default function DemoClient() {
     <main className="min-h-screen bg-slate-50">
       {/* Banner */}
       <div className="bg-slate-900 px-4 py-2 text-center text-xs text-white">
-        <span className="font-semibold">▰ ApprovalKit live demo</span> · This is what your clients see.
-        Click Approve, pin a comment, or change the brand color.{" "}
-        <Link href="/" className="underline font-semibold">← Back to ApprovalKit</Link>
+        <span className="font-semibold">▰ ApprovalKit live demo</span> · You are{" "}
+        <span className="font-semibold text-amber-300">{name || "the client"}</span>. This is
+        what your designer&apos;s clients see in their inbox.{" "}
+        <Link href="/" className="underline font-semibold">← Back to homepage</Link>
+      </div>
+
+      {/* Flow explainer (collapsible) */}
+      <div className="border-b border-slate-200 bg-amber-50">
+        <div className="mx-auto max-w-5xl px-6 py-3">
+          <button
+            onClick={() => setShowFlow((s) => !s)}
+            className="flex w-full items-center justify-between gap-2 text-left"
+          >
+            <span className="text-sm font-semibold text-amber-900">
+              🧭 How did {name || "the client"} get to this page? {showFlow ? "Hide" : "Show"} the 4-step flow
+            </span>
+            <span className="text-amber-700">{showFlow ? "▴" : "▾"}</span>
+          </button>
+          {showFlow && (
+            <ol className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
+              <FlowStep
+                n={1}
+                title={`${agency} uploads work`}
+                body="Agency drags 4 logo concepts into their dashboard. ApprovalKit auto-versions them so v1, v2, v3 group together."
+              />
+              <FlowStep
+                n={2}
+                title="One click sends a branded email"
+                body={`${agency} clicks "Email link to client". The client (you) gets a clean branded email — no signup, no app to install.`}
+              />
+              <FlowStep
+                n={3}
+                title="You land HERE"
+                body="No login. Click Approve, leave general feedback, or click anywhere on an image to pin a precise comment to that exact pixel."
+              />
+              <FlowStep
+                n={4}
+                title="Agency hears back instantly"
+                body={`Every action triggers a Slack ping + email + audit-log entry. ${agency} sees your name on every approval — receipts for invoicing.`}
+              />
+            </ol>
+          )}
+        </div>
       </div>
 
       {/* Branded header (uses agency brand color) */}
@@ -497,6 +538,20 @@ export default function DemoClient() {
               />
             </label>
           </div>
+        </div>
+
+        {/* Things to try */}
+        <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 text-sm">
+          <div className="font-semibold text-slate-900">Things to try in this demo</div>
+          <ul className="mt-2 grid gap-1 text-slate-600 sm:grid-cols-2">
+            <li>✓ Click <b>✓ Approve</b> on any logo concept</li>
+            <li>✓ Click anywhere on an image to <b>pin a comment</b> at that pixel</li>
+            <li>✓ Open the <b>Customizer</b> (just above) and change the brand color</li>
+            <li>✓ Switch between <b>v1 / v2</b> on Concept B to see versioning</li>
+          </ul>
+          <p className="mt-2 text-[11px] text-slate-400">
+            Nothing you do here is saved. Refresh to reset.
+          </p>
         </div>
 
         {/* Filter tabs + actions */}
@@ -751,6 +806,25 @@ export default function DemoClient() {
           </div>
         )}
 
+        {/* What happens next */}
+        <section className="mt-12 rounded-xl border border-slate-200 bg-white p-6">
+          <h2 className="text-lg font-semibold text-slate-900">
+            🎯 What happens after {name || "the client"} clicks Approve?
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            In this demo nothing real fires — but on a live ApprovalKit account, every approval triggers:
+          </p>
+          <ol className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+            <NextStep icon="📧" title="Instant email to the agency" body="With the approver's name, asset version, and a one-click 'Open in dashboard' link." />
+            <NextStep icon="🔔" title="Slack / Discord / Zapier ping" body="Webhook payload includes asset, project, actor — wire it into your project-management board." />
+            <NextStep icon="📜" title="Timestamped audit-log entry" body="Stored permanently. Download the project's CSV any time as proof for invoicing or scope-creep disputes." />
+            <NextStep icon="🟢" title="Asset switches to 'approved'" body="Visible on the agency dashboard, the public review page, and the daily-digest email if enabled." />
+          </ol>
+          <p className="mt-4 text-xs text-slate-400">
+            Comments fire the same way — agencies hear about feedback in seconds, not the next morning.
+          </p>
+        </section>
+
         {/* CTA */}
         <section
           className="mt-16 rounded-2xl border bg-gradient-to-br from-white to-white p-8 text-center"
@@ -776,7 +850,7 @@ export default function DemoClient() {
               See full feature list
             </Link>
           </div>
-          <p className="mt-3 text-xs text-slate-500">30-day refund · no subscription · unlimited projects</p>
+          <p className="mt-3 text-xs text-slate-500">14-day refund · no subscription · unlimited projects</p>
         </section>
       </section>
 
@@ -786,3 +860,31 @@ export default function DemoClient() {
     </main>
   );
 }
+
+function FlowStep({ n, title, body }: { n: number; title: string; body: string }) {
+  return (
+    <li className="flex gap-3 rounded-lg border border-amber-200 bg-white p-3">
+      <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-amber-500 text-sm font-bold text-white">
+        {n}
+      </span>
+      <div>
+        <div className="font-semibold text-amber-950">{title}</div>
+        <div className="mt-0.5 text-xs text-amber-900/70">{body}</div>
+      </div>
+    </li>
+  );
+}
+
+
+function NextStep({ icon, title, body }: { icon: string; title: string; body: string }) {
+  return (
+    <li className="flex gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+      <span className="text-xl">{icon}</span>
+      <div>
+        <div className="font-semibold text-slate-900">{title}</div>
+        <div className="mt-0.5 text-xs text-slate-600">{body}</div>
+      </div>
+    </li>
+  );
+}
+
