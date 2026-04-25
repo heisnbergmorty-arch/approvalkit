@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Lightbox } from "./lightbox";
 
 interface Asset {
   id: string;
@@ -148,6 +149,7 @@ export function AssetReviewCard({ reviewSlug, asset, comments, brandColor, defau
             className={`relative aspect-[3/2] w-full bg-slate-100 ${isApproved ? "" : "cursor-crosshair"}`}
             onClick={startPin}
           >
+            <Lightbox src={asset.fileUrl} alt={asset.label} />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={asset.fileUrl}
