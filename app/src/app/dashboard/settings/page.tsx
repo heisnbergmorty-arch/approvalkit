@@ -160,8 +160,18 @@ export default async function SettingsPage() {
       <section className="mt-8 rounded-xl border border-slate-200 bg-white p-5 text-sm">
         <div className="font-semibold">Your data</div>
         <p className="mt-2 text-slate-600">
-          Need to export everything? Use the <strong>Export approval log (CSV)</strong> button on
-          each project page. We're rolling out a full account-wide export soon.
+          Download a single CSV containing every comment and approval across all your projects —
+          timestamps, actor names, and emails included. Use it for invoice proof, contract disputes,
+          or your own backup.
+        </p>
+        <a
+          href="/api/export/all.csv"
+          className="mt-3 inline-block rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+        >
+          ⬇ Download full account export (CSV)
+        </a>
+        <p className="mt-3 text-xs text-slate-500">
+          Per-project exports are also available from each project page.
         </p>
       </section>
     </main>
