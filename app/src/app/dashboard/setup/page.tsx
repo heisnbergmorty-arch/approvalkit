@@ -4,6 +4,8 @@ import { db } from "@/db/client";
 import { agencies } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { createOrUpdateAgency } from "@/lib/actions";
+import { LogoUploader } from "@/components/logo-uploader";
+import { BrandColorPicker } from "@/components/brand-color-picker";
 import Link from "next/link";
 
 export default async function SetupPage() {
@@ -49,28 +51,13 @@ export default async function SetupPage() {
           placeholder="pixel-and-pine"
           help="Auto-generated from your name if you leave this blank."
         />
-        <Field
-          label="Logo URL (optional)"
+        <LogoUploader
           name="logoUrl"
-          defaultValue={existing?.logoUrl ?? ""}
-          placeholder="https://your-cdn.com/logo.png"
-          type="url"
-          help="Square image works best. Skip for now and we'll show a brand-color initial."
+          defaultUrl={existing?.logoUrl ?? ""}
+          brandColor={existing?.brandColor ?? "#6366f1"}
+          agencyInitial={(existing?.name?.[0] ?? "A").toUpperCase()}
         />
-        <div>
-          <label className="mb-1 block text-sm font-medium">Brand color</label>
-          <div className="flex items-center gap-3">
-            <input
-              type="color"
-              name="brandColor"
-              defaultValue={existing?.brandColor ?? "#6366f1"}
-              className="h-12 w-20 cursor-pointer rounded-lg border border-slate-300"
-            />
-            <span className="text-xs text-slate-500">
-              Used everywhere your clients look — buttons, pin badges, accents.
-            </span>
-          </div>
-        </div>
+        <BrandColorPicker name="brandColor" defaultValue={existing?.brandColor ?? "#6366f1"} />
         <button className="w-full rounded-lg bg-brand-500 px-4 py-3 font-medium text-white hover:bg-brand-600">
           {existing ? "Save changes" : "Create agency →"}
         </button>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { presignUpload } from "@/lib/storage";
-import { requireAgency } from "@/lib/session";
+import { requireUserId } from "@/lib/session";
 
 const schema = z.object({
   filename: z.string().min(1).max(200),
@@ -10,7 +10,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   try {
-    await requireAgency();
+    await requireUserId();
     const data = schema.parse(await req.json());
     const result = await presignUpload(data.filename, data.contentType);
     return NextResponse.json(result);

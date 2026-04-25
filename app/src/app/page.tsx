@@ -211,8 +211,14 @@ export default function Home() {
           </a>
         </div>
         <p className="mt-4 text-sm text-slate-500">
-          One payment · 30-day refund · unlimited projects · unlimited team members
+          One payment · 14-day refund · unlimited projects · unlimited clients
         </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-400">
+          <span className="inline-flex items-center gap-1">🔒 SSL + Postgres encryption at rest</span>
+          <span className="inline-flex items-center gap-1">⚡ 90-second setup</span>
+          <span className="inline-flex items-center gap-1">🌍 Self-hostable on your domain</span>
+          <span className="inline-flex items-center gap-1">💳 Pay once, own forever</span>
+        </div>
       </section>
 
       {/* Features */}
@@ -358,11 +364,19 @@ export default function Home() {
           We host it. You log in. No servers to manage, no monthly bill.
         </p>
         <div className="mt-10 inline-block rounded-2xl border border-brand-200 bg-white p-8 text-left shadow-sm">
-          <div className="text-sm font-medium text-brand-600">Lifetime access</div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-sm font-medium text-brand-600">Lifetime access</div>
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
+              Pay once
+            </span>
+          </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-5xl font-bold text-slate-900">$149</span>
             <span className="text-sm text-slate-500">one-time · no subscription</span>
           </div>
+          <p className="mt-1 text-xs text-slate-500">
+            Cheaper than 5 months of Filestage ($30/mo). Yours forever.
+          </p>
           <ul className="mt-6 space-y-2 text-sm text-slate-700">
             <li>✓ Unlimited projects, clients, and revisions</li>
             <li>✓ Unlimited team members</li>
@@ -373,7 +387,7 @@ export default function Home() {
             <li>✓ Slack &amp; Zapier webhooks</li>
             <li>✓ Magic-link login — no passwords to manage</li>
             <li>✓ All future features included, forever</li>
-            <li>✓ 30-day refund, no questions asked</li>
+            <li>✓ 14-day refund, no questions asked</li>
           </ul>
           <a
             href="https://heisnberg4.gumroad.com/l/tneacr"
@@ -382,7 +396,15 @@ export default function Home() {
             Get lifetime access →
           </a>
           <p className="mt-3 text-center text-xs text-slate-500">
-            Secure checkout via Gumroad
+            Secure checkout via Gumroad · Apple Pay, card, PayPal
+          </p>
+        </div>
+        <div className="mx-auto mt-6 max-w-md rounded-xl border border-slate-200 bg-slate-50 p-4 text-left text-sm text-slate-600">
+          <div className="font-semibold text-slate-900">💸 The math</div>
+          <p className="mt-1">
+            One faster client approval pays for ApprovalKit forever. If revisions take you
+            from 7 days to 1, that&rsquo;s ~6 hours of unbillable chasing saved per project.
+            At $80/hr, you break even on project #1.
           </p>
         </div>
       </section>

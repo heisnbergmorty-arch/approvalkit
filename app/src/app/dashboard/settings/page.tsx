@@ -1,10 +1,19 @@
 import { requireAgency } from "@/lib/session";
 import { updateSettings } from "./actions";
 import { TestWebhookButton } from "./test-webhook-button";
+import { LogoUploader } from "@/components/logo-uploader";
+import { BrandColorPicker } from "@/components/brand-color-picker";
+import { db } from "@/db/client";
+import { projects } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
 
 export default async function SettingsPage() {
   const { agency } = await requireAgency();
+  const firstProject = await db.query.projects.findFirst({
+    where: eq(projects.agencyId, agency.id),
+    orderBy: [desc(projects.createdAt)],
+  });
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
@@ -26,27 +35,12 @@ export default async function SettingsPage() {
             placeholder="Pixel & Pine Studio"
             help="Shown in the header of every client review page."
           />
-          <div>
-            <label className="mb-1 block text-sm font-medium">Brand color</label>
-            <div className="flex items-center gap-3">
-              <input
-                type="color"
-                name="brandColor"
-                defaultValue={agency.brandColor ?? "#6366f1"}
-                className="h-10 w-16 cursor-pointer rounded-lg border border-slate-300"
-              />
-              <span className="text-xs text-slate-500">
-                Used for buttons, pin badges, and accents on every review page.
-              </span>
-            </div>
-          </div>
-          <Field
-            label="Logo URL (optional)"
+          <BrandColorPicker name="brandColor" defaultValue={agency.brandColor ?? "#6366f1"} />
+          <LogoUploader
             name="logoUrl"
-            type="url"
-            defaultValue={agency.logoUrl ?? ""}
-            placeholder="https://your-cdn.com/logo.png"
-            help="Square PNG or SVG works best. ~64×64. Leave blank to use a brand-color initial."
+            defaultUrl={agency.logoUrl ?? ""}
+            brandColor={agency.brandColor ?? "#6366f1"}
+            agencyInitial={(agency.name?.[0] ?? "A").toUpperCase()}
           />
         </Section>
 
@@ -76,6 +70,22 @@ export default async function SettingsPage() {
           Save settings
         </button>
       </form>
+
+      {firstProject && (
+        <div className="mt-6 rounded-xl border border-brand-200 bg-brand-50 p-4 text-sm">
+          <div className="font-medium text-slate-900">See it through your client&rsquo;s eyes</div>
+          <p className="mt-1 text-slate-600">
+            Open the live review page for <b>{firstProject.name}</b> to preview your branding.
+          </p>
+          <Link
+            href={`/review/${firstProject.reviewSlug}`}
+            target="_blank"
+            className="mt-3 inline-block rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-600"
+          >
+            Preview as client ↗
+          </Link>
+        </div>
+      )}
 
       <section className="mt-12 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm">
         <div className="font-semibold">Webhook payload example</div>
