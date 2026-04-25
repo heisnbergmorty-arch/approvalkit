@@ -140,6 +140,7 @@ export const assets = pgTable(
       enum: ["pending", "approved", "changes_requested"],
     }).default("pending").notNull(),
     isCurrentVersion: boolean("isCurrentVersion").default(true).notNull(),
+    internalNote: text("internalNote"), // agency-only notes, never shown to client
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   (t) => ({

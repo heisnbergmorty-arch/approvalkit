@@ -207,6 +207,24 @@ export default async function DashboardPage({
                   </span>
                 </div>
 
+                {m.pending > 0 && m.lastActivity && (() => {
+                  const days = Math.floor(
+                    (Date.now() - m.lastActivity.getTime()) / 86_400_000,
+                  );
+                  if (days < 3) return null;
+                  const tone =
+                    days >= 7
+                      ? "bg-red-50 text-red-700 border-red-200"
+                      : "bg-amber-50 text-amber-700 border-amber-200";
+                  return (
+                    <div
+                      className={`mt-2 inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium ${tone}`}
+                    >
+                      ⏳ Waiting on client · {days}d
+                    </div>
+                  );
+                })()}
+
                 <div className="mt-4 flex items-center gap-3 text-xs text-slate-600">
                   <span>
                     <span className="font-semibold text-slate-900">{m.total}</span> assets

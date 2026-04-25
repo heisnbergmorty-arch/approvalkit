@@ -8,6 +8,7 @@ import { UploadAssetForm } from "./upload-form";
 import { CopyButton } from "./copy-button";
 import { ProjectActions } from "./project-actions";
 import { SendLinkButton } from "./send-link-button";
+import { AssetNote } from "./asset-note";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -152,6 +153,11 @@ export default async function ProjectDetail({ params }: Props) {
                 <div className="truncate text-xs text-slate-500">
                   {a.groupKey} · {a.mimeType}
                 </div>
+                <AssetNote
+                  assetId={a.id}
+                  projectId={project.id}
+                  defaultNote={a.internalNote}
+                />
               </div>
               <a
                 href={a.fileUrl}

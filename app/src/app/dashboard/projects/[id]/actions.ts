@@ -85,3 +85,22 @@ function extractKey(url: string): string | null {
   if (!url.startsWith("http")) return url;
   return null;
 }
+
+export async function updateAssetNote(assetId: string, projectId: string, note: string) {
+  const aid = idSchema.parse(assetId);
+  const pid = idSchema.parse(projectId);
+  const { agency } = await requireAgency();
+
+  const project = await db.query.projects.findFirst({
+    where: and(eq(projects.id, pid), eq(projects.agencyId, agency.id)),
+  });
+  if (!project) throw new Error("NOT_FOUND");
+
+  const trimmed = note.slice(0, 500);
+  await db.update(assets)
+    .set({ internalNote: trimmed || null })
+    .where(and(eq(assets.id, aid), eq(assets.projectId, pid)));
+
+  revalidatePath(`/dashboard/projects/${pid}`);
+  return { ok: true };
+}
