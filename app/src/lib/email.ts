@@ -26,15 +26,21 @@ export function reviewLinkEmail(opts: {
   clientName: string;
   projectName: string;
   reviewUrl: string;
+  intro?: string | null;
+  signature?: string | null;
 }): string {
-  const { agencyName, brandColor, clientName, projectName, reviewUrl } = opts;
+  const { agencyName, brandColor, clientName, projectName, reviewUrl, intro, signature } = opts;
+  const introHtml = intro && intro.trim()
+    ? `<p style="margin:0 0 16px;font-size:15px;color:#475569">${escape(intro).replace(/\n/g, "<br>")}</p>`
+    : `<p style="margin:0 0 16px;font-size:15px;color:#475569">${escape(agencyName)} has work ready for your review on <b>${escape(projectName)}</b>.</p>`;
+  const signHtml = signature && signature.trim()
+    ? `<p style="margin:24px 0 0;font-size:14px;color:#64748b">${escape(signature).replace(/\n/g, "<br>")}</p>`
+    : `<p style="margin:24px 0 0;font-size:14px;color:#64748b">— ${escape(agencyName)}</p>`;
   return baseShell(
     brandColor,
     `
     <h1 style="margin:0 0 16px;font-size:22px">Hi ${escape(clientName)},</h1>
-    <p style="margin:0 0 16px;font-size:15px;color:#475569">
-      ${escape(agencyName)} has work ready for your review on <b>${escape(projectName)}</b>.
-    </p>
+    ${introHtml}
     <p style="margin:24px 0">
       <a href="${reviewUrl}" style="display:inline-block;background:${brandColor};color:#fff;
         padding:14px 22px;border-radius:8px;font-weight:600;text-decoration:none">
@@ -42,6 +48,7 @@ export function reviewLinkEmail(opts: {
       </a>
     </p>
     <p style="font-size:13px;color:#94a3b8">No login needed. Just open the link.</p>
+    ${signHtml}
     `,
   );
 }

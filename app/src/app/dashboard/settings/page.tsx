@@ -66,6 +66,36 @@ export default async function SettingsPage() {
           <TestWebhookButton />
         </Section>
 
+        <Section title="Client emails">
+          <div>
+            <label className="mb-1 block text-sm font-medium">Email opener</label>
+            <textarea
+              name="emailIntro"
+              rows={3}
+              defaultValue={agency.emailIntro ?? ""}
+              placeholder="Hi there — we&rsquo;ve got fresh work ready for your review. Let us know what you think!"
+              maxLength={500}
+              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+            />
+            <p className="mt-1 text-xs text-slate-500">
+              First line of every review-link email. Leave blank for a sensible default.
+            </p>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Sign-off</label>
+            <input
+              name="emailSignature"
+              defaultValue={agency.emailSignature ?? ""}
+              placeholder="— The team at Pixel & Pine"
+              maxLength={120}
+              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+            />
+            <p className="mt-1 text-xs text-slate-500">
+              Shown at the bottom of every client email. Defaults to your agency name.
+            </p>
+          </div>
+        </Section>
+
         <button className="rounded-lg bg-brand-500 px-5 py-2.5 font-medium text-white hover:bg-brand-600">
           Save settings
         </button>

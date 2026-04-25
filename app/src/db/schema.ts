@@ -96,6 +96,8 @@ export const agencies = pgTable("agencies", {
   brandColor: text("brandColor").default("#6366f1"),
   customDomain: text("customDomain"),
   webhookUrl: text("webhookUrl"),
+  emailIntro: text("emailIntro"), // optional opener for client review-link emails
+  emailSignature: text("emailSignature"), // optional sign-off / sender name
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

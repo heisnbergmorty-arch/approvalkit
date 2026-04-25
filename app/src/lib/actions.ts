@@ -41,6 +41,8 @@ export async function createOrUpdateAgency(formData: FormData) {
     await db.update(agencies)
       .set({ name: data.name, brandColor: data.brandColor, logoUrl: data.logoUrl || null })
       .where(eq(agencies.id, existing.id));
+    revalidatePath("/dashboard");
+    redirect("/dashboard");
   } else {
     await db.insert(agencies).values({
       ownerUserId: userId,
@@ -49,10 +51,11 @@ export async function createOrUpdateAgency(formData: FormData) {
       brandColor: data.brandColor,
       logoUrl: data.logoUrl || null,
     });
+    revalidatePath("/dashboard");
+    // First-time setup: send straight into creating the first project so the user
+    // hits the "aha" moment (a working review link) within 60 seconds.
+    redirect("/dashboard/projects/new");
   }
-
-  revalidatePath("/dashboard");
-  redirect("/dashboard");
 }
 
 // ============================================================================
@@ -106,6 +109,8 @@ export async function sendReviewLink(projectId: string) {
       clientName: project.clientName,
       projectName: project.name,
       reviewUrl,
+      intro: agency.emailIntro,
+      signature: agency.emailSignature,
     }),
     replyTo: undefined,
   });

@@ -13,6 +13,8 @@ const settingsSchema = z.object({
   logoUrl: z.string().url().max(500).optional().or(z.literal("")),
   customDomain: z.string().max(120).optional().or(z.literal("")),
   webhookUrl: z.string().url().max(500).optional().or(z.literal("")),
+  emailIntro: z.string().max(500).optional().or(z.literal("")),
+  emailSignature: z.string().max(120).optional().or(z.literal("")),
 });
 
 export async function updateSettings(formData: FormData) {
@@ -23,6 +25,8 @@ export async function updateSettings(formData: FormData) {
     logoUrl: formData.get("logoUrl") || "",
     customDomain: formData.get("customDomain") || "",
     webhookUrl: formData.get("webhookUrl") || "",
+    emailIntro: formData.get("emailIntro") || "",
+    emailSignature: formData.get("emailSignature") || "",
   });
 
   await db
@@ -33,6 +37,8 @@ export async function updateSettings(formData: FormData) {
       logoUrl: data.logoUrl || null,
       customDomain: data.customDomain || null,
       webhookUrl: data.webhookUrl || null,
+      emailIntro: data.emailIntro || null,
+      emailSignature: data.emailSignature || null,
     })
     .where(eq(agencies.id, agency.id));
 
