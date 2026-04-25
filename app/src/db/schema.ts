@@ -62,6 +62,23 @@ export const verificationTokens = pgTable(
 );
 
 // ============================================================================
+// Payment gating — Gumroad-paid customers
+// ============================================================================
+
+/**
+ * paidUsers = email allowlist populated by Gumroad sale webhook.
+ * Only emails in this table can complete magic-link signin.
+ * Refunds set refundedAt → signIn callback rejects.
+ */
+export const paidUsers = pgTable("paidUsers", {
+  email: text("email").primaryKey(),
+  gumroadSaleId: text("gumroadSaleId").notNull(),
+  gumroadProductId: text("gumroadProductId"),
+  paidAt: timestamp("paidAt").defaultNow().notNull(),
+  refundedAt: timestamp("refundedAt"),
+});
+
+// ============================================================================
 // ApprovalKit domain tables
 // ============================================================================
 
