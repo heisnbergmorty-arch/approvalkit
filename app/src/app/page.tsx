@@ -172,6 +172,7 @@ export default function Home() {
             <a href="#faq" className="hover:text-slate-900">FAQ</a>
             <Link href="/roadmap" className="hover:text-slate-900">Roadmap</Link>
             <Link href="/changelog" className="hover:text-slate-900">Changelog</Link>
+            <Link href="/help" className="hover:text-slate-900">Help</Link>
           </div>
           <a
             href="https://heisnberg4.gumroad.com/l/tneacr"
@@ -451,6 +452,7 @@ export default function Home() {
               <li><a href="#pricing" className="hover:text-slate-900">Pricing</a></li>
               <li><Link href="/roadmap" className="hover:text-slate-900">Roadmap</Link></li>
               <li><Link href="/changelog" className="hover:text-slate-900">Changelog</Link></li>
+              <li><Link href="/help" className="hover:text-slate-900">Help &amp; docs</Link></li>
             </ul>
           </div>
           <div>

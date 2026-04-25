@@ -1,7 +1,7 @@
 import { requireAgency, appUrl } from "@/lib/session";
 import { db } from "@/db/client";
-import { projects, assets } from "@/db/schema";
-import { and, eq, desc } from "drizzle-orm";
+import { projects, assets, comments, approvals } from "@/db/schema";
+import { and, eq, desc, inArray } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { UploadAssetForm } from "./upload-form";
@@ -24,6 +24,31 @@ export default async function ProjectDetail({ params }: Props) {
     where: eq(assets.projectId, project.id),
     orderBy: [desc(assets.createdAt)],
   });
+
+  const assetIds = assetList.map((a) => a.id);
+  const [commentRows, approvalRows] = assetIds.length
+    ? await Promise.all([
+        db
+          .select({
+            id: comments.id,
+            assetId: comments.assetId,
+            isFromAgency: comments.isFromAgency,
+            createdAt: comments.createdAt,
+          })
+          .from(comments)
+          .where(inArray(comments.assetId, assetIds)),
+        db
+          .select({
+            id: approvals.id,
+            assetId: approvals.assetId,
+            approvedAt: approvals.approvedAt,
+          })
+          .from(approvals)
+          .where(inArray(approvals.assetId, assetIds)),
+      ])
+    : [[], []];
+
+  const insights = computeInsights(assetList, commentRows, approvalRows);
 
   const reviewUrl = appUrl(`/review/${project.reviewSlug}`);
 
@@ -64,6 +89,28 @@ export default async function ProjectDetail({ params }: Props) {
           <SendLinkButton projectId={project.id} clientEmail={project.clientEmail} />
         </div>
       </section>
+
+      {assetList.length > 0 && (
+        <section className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Insight label="Assets" value={String(insights.totalAssets)} hint={`${insights.approvedAssets} approved`} />
+          <Insight label="Comments" value={String(insights.commentCount)} hint={`${insights.clientComments} from client`} />
+          <Insight
+            label="Avg approval time"
+            value={insights.avgApprovalDays === null ? "—" : `${insights.avgApprovalDays.toFixed(1)}d`}
+            hint="upload → approval"
+          />
+          <Insight
+            label="Most discussed"
+            value={insights.mostDiscussedLabel ?? "—"}
+            hint={
+              insights.mostDiscussedCount
+                ? `${insights.mostDiscussedCount} comment${insights.mostDiscussedCount === 1 ? "" : "s"}`
+                : "no comments yet"
+            }
+            small
+          />
+        </section>
+      )}
 
       <section className="mt-8">
         <h2 className="text-lg font-semibold">Upload work for review</h2>
@@ -112,4 +159,97 @@ function StatusBadge({ status }: { status: string }) {
       {status.replace("_", " ")}
     </span>
   );
+}
+
+function Insight({
+  label,
+  value,
+  hint,
+  small,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  small?: boolean;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="text-[11px] font-medium uppercase tracking-wider text-slate-500">{label}</div>
+      <div className={`mt-1 font-bold text-slate-900 ${small ? "truncate text-base" : "text-2xl"}`}>
+        {value}
+      </div>
+      <div className="text-xs text-slate-400">{hint}</div>
+    </div>
+  );
+}
+
+interface AssetSlim {
+  id: string;
+  label: string;
+  status: string;
+  createdAt: Date;
+}
+interface CommentSlim {
+  id: string;
+  assetId: string;
+  isFromAgency: boolean;
+  createdAt: Date;
+}
+interface ApprovalSlim {
+  id: string;
+  assetId: string;
+  approvedAt: Date;
+}
+
+function computeInsights(
+  assetList: AssetSlim[],
+  commentRows: CommentSlim[],
+  approvalRows: ApprovalSlim[],
+) {
+  const totalAssets = assetList.length;
+  const approvedAssets = assetList.filter((a) => a.status === "approved").length;
+  const commentCount = commentRows.length;
+  const clientComments = commentRows.filter((c) => !c.isFromAgency).length;
+
+  // Avg approval time (days from asset.createdAt → first approval)
+  const firstApprovalByAsset = new Map<string, Date>();
+  for (const a of approvalRows) {
+    const cur = firstApprovalByAsset.get(a.assetId);
+    if (!cur || a.approvedAt < cur) firstApprovalByAsset.set(a.assetId, a.approvedAt);
+  }
+  const durations: number[] = [];
+  for (const a of assetList) {
+    const ap = firstApprovalByAsset.get(a.id);
+    if (ap) {
+      const days = (ap.getTime() - new Date(a.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+      if (days >= 0) durations.push(days);
+    }
+  }
+  const avgApprovalDays =
+    durations.length > 0
+      ? durations.reduce((s, n) => s + n, 0) / durations.length
+      : null;
+
+  // Most-discussed asset
+  const counts = new Map<string, number>();
+  for (const c of commentRows) counts.set(c.assetId, (counts.get(c.assetId) ?? 0) + 1);
+  let topId: string | null = null;
+  let topCount = 0;
+  for (const [id, n] of counts) {
+    if (n > topCount) {
+      topCount = n;
+      topId = id;
+    }
+  }
+  const mostDiscussedLabel = topId ? assetList.find((a) => a.id === topId)?.label ?? null : null;
+
+  return {
+    totalAssets,
+    approvedAssets,
+    commentCount,
+    clientComments,
+    avgApprovalDays,
+    mostDiscussedLabel,
+    mostDiscussedCount: topCount,
+  };
 }

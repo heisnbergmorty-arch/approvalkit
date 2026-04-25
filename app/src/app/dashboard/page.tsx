@@ -4,6 +4,7 @@ import { db } from "@/db/client";
 import { agencies, projects, assets, approvals, comments } from "@/db/schema";
 import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import Link from "next/link";
+import { OnboardingChecklist } from "./onboarding-checklist";
 
 type SearchParams = { view?: string; q?: string };
 
@@ -62,14 +63,24 @@ export default async function DashboardPage({
   );
 
   const projectIds = projectList.map((p) => p.id);
+  const allProjectIds = allProjects.map((p) => p.id);
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const [stats, perProject] = projectIds.length
+  const [stats, perProject, hasFirstAsset] = projectIds.length
     ? await Promise.all([
         getGlobalStats(projectIds, weekAgo),
         getPerProjectStats(projectIds),
+        db
+          .select({ n: sql<number>`count(*)::int` })
+          .from(assets)
+          .where(inArray(assets.projectId, allProjectIds))
+          .then((r) => (r[0]?.n ?? 0) > 0),
       ])
-    : [{ pending: 0, approvals: 0, comments: 0 }, new Map<string, ProjectMetric>()];
+    : [
+        { pending: 0, approvals: 0, comments: 0 },
+        new Map<string, ProjectMetric>(),
+        false,
+      ];
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
@@ -105,6 +116,16 @@ export default async function DashboardPage({
         <StatCard label="Approvals this week" value={stats.approvals} hint="last 7 days" />
         <StatCard label="New comments" value={stats.comments} hint="from clients · 7d" />
       </div>
+
+      <OnboardingChecklist
+        agencyName={agency.name}
+        hasBrandColor={Boolean(agency.brandColor)}
+        hasLogo={Boolean(agency.logoUrl)}
+        hasFirstProject={allProjects.length > 0}
+        hasFirstAsset={hasFirstAsset}
+        hasWebhook={Boolean(agency.webhookUrl)}
+        hasCustomDomain={Boolean(agency.customDomain)}
+      />
 
       <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">
         <ViewTab current={view} value="active" label="Active" count={counts.active} />
