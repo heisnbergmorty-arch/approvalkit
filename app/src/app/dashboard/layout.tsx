@@ -61,6 +61,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </form>
           </div>
         </div>
+        {/* Mobile: horizontally scrollable secondary nav so dashboard stays navigable below sm breakpoint. */}
+        <div className="flex gap-4 overflow-x-auto whitespace-nowrap border-t border-slate-100 bg-white px-6 py-2 text-xs text-slate-600 sm:hidden">
+          <Link href="/dashboard">Projects</Link>
+          <Link href="/dashboard/activity">Activity</Link>
+          <Link href="/dashboard/settings">Settings</Link>
+          <Link href="/dashboard/billing">Billing</Link>
+          <Link href="/demo" target="_blank">Demo</Link>
+          <Link href="/roadmap">Roadmap</Link>
+          <Link href="/changelog">Changelog</Link>
+          <Link href="/help">Help</Link>
+        </div>
       </nav>
       {children}
     </div>
