@@ -31,3 +31,5 @@ build/
 # Misc
 *.log
 .gitignore.new
+
+app/build.log

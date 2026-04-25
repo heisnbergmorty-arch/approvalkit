@@ -174,12 +174,20 @@ export default function Home() {
             <Link href="/changelog" className="hover:text-slate-900">Changelog</Link>
             <Link href="/help" className="hover:text-slate-900">Help</Link>
           </div>
-          <a
-            href="https://heisnberg4.gumroad.com/l/tneacr"
-            className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600"
-          >
-            Get access
-          </a>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900"
+            >
+              Sign in
+            </Link>
+            <a
+              href="https://heisnberg4.gumroad.com/l/tneacr"
+              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600"
+            >
+              Get access
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -528,6 +536,7 @@ export default function Home() {
               <li><Link href="/roadmap" className="hover:text-slate-900">Roadmap</Link></li>
               <li><Link href="/changelog" className="hover:text-slate-900">Changelog</Link></li>
               <li><Link href="/help" className="hover:text-slate-900">Help &amp; docs</Link></li>
+              <li><Link href="/login" className="hover:text-slate-900">Sign in</Link></li>
             </ul>
           </div>
           <div>
