@@ -12,9 +12,9 @@ import { sendReviewLink as sendReviewLinkAction } from "@/lib/actions";
 
 const idSchema = z.string().uuid();
 
-export async function sendReviewLinkToClient(projectId: string) {
+export async function sendReviewLinkToClient(projectId: string, customMessage?: string) {
   const id = idSchema.parse(projectId);
-  await sendReviewLinkAction(id);
+  await sendReviewLinkAction(id, customMessage);
   revalidatePath(`/dashboard/projects/${id}`);
   return { ok: true };
 }

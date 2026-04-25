@@ -92,7 +92,7 @@ export async function createProject(formData: FormData) {
   redirect(`/dashboard/projects/${created.id}`);
 }
 
-export async function sendReviewLink(projectId: string) {
+export async function sendReviewLink(projectId: string, customMessage?: string) {
   const { agency } = await requireAgency();
   const project = await db.query.projects.findFirst({
     where: and(eq(projects.id, projectId), eq(projects.agencyId, agency.id)),
@@ -100,6 +100,7 @@ export async function sendReviewLink(projectId: string) {
   if (!project) throw new Error("NOT_FOUND");
 
   const reviewUrl = appUrl(`/review/${project.reviewSlug}`);
+  const trimmed = customMessage?.trim().slice(0, 500) || undefined;
   await sendEmail({
     to: project.clientEmail,
     subject: `${agency.name} — review work for ${project.name}`,
@@ -109,7 +110,7 @@ export async function sendReviewLink(projectId: string) {
       clientName: project.clientName,
       projectName: project.name,
       reviewUrl,
-      intro: agency.emailIntro,
+      intro: trimmed ?? agency.emailIntro,
       signature: agency.emailSignature,
     }),
     replyTo: undefined,
