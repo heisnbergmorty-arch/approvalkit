@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { AssetReviewCard } from "./asset-card";
 import { ReviewFilters } from "./review-filters";
 import { BulkApproveButton } from "./bulk-approve";
+import { ReviewKeyboardShortcuts } from "./keyboard-shortcuts";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -164,6 +165,8 @@ export default async function ReviewPage({ params, searchParams }: Props) {
       <footer className="mx-auto max-w-5xl px-6 pb-12 text-center text-xs text-slate-400">
         Powered by ApprovalKit
       </footer>
+
+      <ReviewKeyboardShortcuts />
     </main>
   );
 }

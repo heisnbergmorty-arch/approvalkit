@@ -141,7 +141,7 @@ export function AssetReviewCard({ reviewSlug, asset, comments, brandColor, defau
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div data-asset-card className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="relative">
         {isImage ? (
           <div
