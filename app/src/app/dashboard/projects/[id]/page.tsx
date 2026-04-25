@@ -9,6 +9,7 @@ import { CopyButton } from "./copy-button";
 import { ProjectActions } from "./project-actions";
 import { SendLinkButton } from "./send-link-button";
 import { AssetNote } from "./asset-note";
+import { DeleteAssetButton } from "./delete-asset-button";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -168,6 +169,11 @@ export default async function ProjectDetail({ params }: Props) {
                 Open ↗
               </a>
               <StatusBadge status={a.status} />
+              <DeleteAssetButton
+                assetId={a.id}
+                projectId={project.id}
+                label={a.label}
+              />
             </li>
           ))}
         </ul>
