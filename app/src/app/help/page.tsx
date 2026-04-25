@@ -85,9 +85,21 @@ const sections: { title: string; items: QA[] }[] = [
         q: "Can I export the approval log for invoicing?",
         a: (
           <>
-            Yes — every project page has an <b>⬇ Export approval log (CSV)</b> button.
-            Includes timestamps, actors, asset versions, and full comment bodies. Settles
+            Yes — every project page has an <b>⬇ Export approval log (CSV)</b> button, and
+            <b> Settings → Your data</b> has a <b>full account export</b> covering every project
+            in one file. Includes timestamps, actors, asset versions, and comment bodies. Settles
             scope-creep arguments instantly.
+          </>
+        ),
+      },
+      {
+        q: "Too many notification emails — can I throttle them?",
+        a: (
+          <>
+            Yes. Open any project and use the <b>Notifications</b> selector to switch between{" "}
+            <b>Instant</b> (email per event), <b>Daily digest</b> (one summary email per day),
+            or <b>Off</b> (webhooks still fire). Setting is per-project, so you can keep noisy
+            old projects silent while staying instant on the new launch.
           </>
         ),
       },
