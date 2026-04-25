@@ -38,13 +38,55 @@ const objections = [
   },
   {
     q: "Can I use my own domain?",
-    a: "Yes. Add a CNAME and your clients land on review.youragency.com. We set it up for you within 24h.",
+    a: "Yes. Point a domain at us with one DNS record — we walk you through it. Your clients land on review.youragency.com instead of ours.",
   },
   {
     q: "What if it doesn't work for me?",
     a: "30-day refund, no questions asked. Email and you get your money back.",
+  },  {
+    q: "What file types can I upload?",
+    a: "PNG, JPG, GIF, WebP, and PDF. Up to 25MB per file. Video review (MP4) is on the roadmap.",
+  },
+  {
+    q: "How is this different from Figma comments or Loom?",
+    a: "Figma needs your client to have a Figma account. Loom is one-way. ApprovalKit is built for one purpose: get a yes (or precise feedback) from a non-technical client in the fewest clicks possible.",
   },
 ];
+
+const comparisons = [
+  {
+    name: "ApprovalKit",
+    price: "$149 once",
+    perUser: "Unlimited",
+    perProject: "Unlimited",
+    clientLogin: "Not required",
+    branded: "Yes (logo, color, subdomain)",
+    highlight: true,
+  },
+  {
+    name: "Filestage",
+    price: "$89/mo",
+    perUser: "3 reviewers",
+    perProject: "10 active",
+    clientLogin: "Email gate",
+    branded: "Higher tiers only",
+  },
+  {
+    name: "Cage.app",
+    price: "$14/user/mo",
+    perUser: "Per seat",
+    perProject: "Unlimited",
+    clientLogin: "Required",
+    branded: "Limited",
+  },
+  {
+    name: "Figma + email",
+    price: "$15/editor/mo",
+    perUser: "Per seat",
+    perProject: "Unlimited",
+    clientLogin: "Figma account",
+    branded: "None",
+  },];
 
 export default function Home() {
   return (
@@ -63,10 +105,10 @@ export default function Home() {
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <Link
-            href="/review/W4gXxMfM3Nx7442C"
+            href="/demo"
             className="rounded-lg bg-brand-500 px-6 py-3 font-medium text-white shadow-sm hover:bg-brand-600"
           >
-            See live demo
+            Try the live demo
           </Link>
           <Link
             href="/login"
@@ -127,6 +169,68 @@ export default function Home() {
             Secure checkout via Gumroad
           </p>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-6 py-16">
+        <h2 className="text-center text-3xl font-bold tracking-tight text-slate-900">
+          How it works
+        </h2>
+        <p className="mt-3 text-center text-slate-600">From file to client approval in under 60 seconds.</p>
+        <ol className="mt-12 grid gap-8 sm:grid-cols-3">
+          {[
+            { n: 1, t: "Upload your work", d: "PNG, JPG, GIF, WebP, PDF — up to 25MB per file. Drag, drop, done." },
+            { n: 2, t: "Send the branded link", d: "We email your client (or you copy the link). They open it on any device." },
+            { n: 3, t: "Get a yes (or precise feedback)", d: "One-click approval, or pixel-pinned comments. You're notified instantly." },
+          ].map((s) => (
+            <li key={s.n} className="rounded-xl border border-slate-200 bg-white p-6 text-center">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 text-lg font-bold text-white">
+                {s.n}
+              </div>
+              <h3 className="mt-4 font-semibold">{s.t}</h3>
+              <p className="mt-2 text-sm text-slate-600">{s.d}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-6 py-16">
+        <h2 className="text-center text-3xl font-bold tracking-tight text-slate-900">
+          How it stacks up
+        </h2>
+        <p className="mt-3 text-center text-slate-600">
+          Pay once. Get more. No per-seat math, no annual contract.
+        </p>
+        <div className="mt-10 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+              <tr>
+                <th className="px-4 py-3"></th>
+                <th className="px-4 py-3">Pricing</th>
+                <th className="px-4 py-3">Reviewers</th>
+                <th className="px-4 py-3">Projects</th>
+                <th className="px-4 py-3">Client login</th>
+                <th className="px-4 py-3">Branded</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {comparisons.map((c) => (
+                <tr key={c.name} className={c.highlight ? "bg-brand-50/50" : ""}>
+                  <td className={`px-4 py-3 font-semibold ${c.highlight ? "text-brand-700" : "text-slate-700"}`}>
+                    {c.name}
+                  </td>
+                  <td className="px-4 py-3 text-slate-700">{c.price}</td>
+                  <td className="px-4 py-3 text-slate-700">{c.perUser}</td>
+                  <td className="px-4 py-3 text-slate-700">{c.perProject}</td>
+                  <td className="px-4 py-3 text-slate-700">{c.clientLogin}</td>
+                  <td className="px-4 py-3 text-slate-700">{c.branded}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-3 text-center text-xs text-slate-400">
+          Pricing as of April 2026. Competitors&apos; published rates.
+        </p>
       </section>
 
       <section className="mx-auto max-w-3xl px-6 py-16">
