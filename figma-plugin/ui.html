@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 16px; color: #0f172a; }
+    label { display: block; font-size: 12px; font-weight: 600; margin-top: 12px; }
+    input, button { width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; }
+    button { background: #6366f1; color: white; border: none; cursor: pointer; font-weight: 600; }
+    button:hover { background: #4f46e5; }
+    .status { margin-top: 12px; font-size: 12px; color: #475569; }
+    .err { color: #dc2626; }
+    .ok { color: #059669; }
+  </style>
+</head>
+<body>
+  <h2 style="margin:0 0 4px;font-size:16px">▰ Push to ApprovalKit</h2>
+  <p style="margin:0;font-size:12px;color:#64748b">Sends the selected frames to your client review portal.</p>
+
+  <label>ApprovalKit URL</label>
+  <input id="apiUrl" placeholder="https://app.approvalkit.com" />
+
+  <label>Access token</label>
+  <input id="token" type="password" placeholder="ak_…" />
+
+  <label>Project ID</label>
+  <input id="projectId" placeholder="uuid" />
+
+  <label>Group key (for versioning)</label>
+  <input id="groupKey" placeholder="logo-concepts" />
+
+  <button id="push" style="margin-top:16px">Push selected frames</button>
+
+  <div class="status" id="status">Loading…</div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // Restore previous values
+    for (const k of ["apiUrl", "token", "projectId", "groupKey"]) {
+      const v = localStorage.getItem("ak_" + k);
+      if (v) $(k).value = v;
+      $(k).addEventListener("input", () => localStorage.setItem("ak_" + k, $(k).value));
+    }
+
+    parent.postMessage({ pluginMessage: { type: "ping" } }, "*");
+
+    $("push").addEventListener("click", () => {
+      parent.postMessage({
+        pluginMessage: {
+          type: "push",
+          apiUrl: $("apiUrl").value.trim(),
+          token: $("token").value.trim(),
+          projectId: $("projectId").value.trim(),
+          groupKey: $("groupKey").value.trim(),
+        }
+      }, "*");
+      $("status").textContent = "Exporting frames…";
+      $("status").className = "status";
+    });
+
+    window.onmessage = async (e) => {
+      const msg = e.data.pluginMessage;
+      if (!msg) return;
+      if (msg.type === "selection") {
+        $("status").textContent = msg.count + " frame" + (msg.count === 1 ? "" : "s") + " selected: " + msg.names.slice(0, 3).join(", ") + (msg.names.length > 3 ? "…" : "");
+      } else if (msg.type === "do-fetch") {
+        const p = msg.payload;
+        try {
+          const res = await fetch(p.apiUrl.replace(/\/+$/, "") + "/api/figma/push", {
+            method: "POST",
+            headers: { "content-type": "application/json", authorization: "Bearer " + p.token },
+            body: JSON.stringify({ projectId: p.projectId, groupKey: p.groupKey, frames: p.frames }),
+          });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          $("status").textContent = "✓ Pushed " + p.frames.length + " frame" + (p.frames.length === 1 ? "" : "s") + " to ApprovalKit.";
+          $("status").className = "status ok";
+        } catch (e) {
+          $("status").textContent = "Error: " + e.message;
+          $("status").className = "status err";
+        }
+      } else if (msg.type === "error") {
+        $("status").textContent = msg.message;
+        $("status").className = "status err";
+      }
+    };
+  </script>
+</body>
+</html>

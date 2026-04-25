@@ -1,0 +1,33 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Salesforce / SFDX scratch
+.sfdx/
+.sf/
+
+# Local data caches
+data/cache/
+
+# Node / Next.js
+node_modules/
+.next/
+.turbo/
+dist/
+build/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Misc
+*.log
+.gitignore.new
