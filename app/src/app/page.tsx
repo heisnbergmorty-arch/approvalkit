@@ -63,7 +63,7 @@ const objections = [
   },
   {
     q: "What if it doesn't work for me?",
-    a: "30-day refund, no questions asked. Email and you get your money back.",
+    a: "14-day refund, no questions asked. Email and you get your money back.",
   },
   {
     q: "What file types can I upload?",
@@ -75,7 +75,7 @@ const objections = [
   },
   {
     q: "Can my whole team use it?",
-    a: "Yes. Invite teammates from the dashboard at no extra cost. Unlimited team members forever.",
+    a: "Multi-seat team accounts are on the roadmap. Today, one ApprovalKit license = one agency owner; everything (projects, clients, uploads) is unlimited under that login.",
   },
   {
     q: "What happens if I stop using it?",
@@ -440,7 +440,7 @@ export default function Home() {
           </p>
           <ul className="mt-6 space-y-2 text-sm text-slate-700">
             <li>✓ Unlimited projects, clients, and revisions</li>
-            <li>✓ Unlimited team members</li>
+            <li>✓ Unlimited assets, comments, and approvals</li>
             <li>✓ Branded review pages with your logo and agency name</li>
             <li>✓ Custom subdomain (review.youragency.com) — included</li>
             <li>✓ Auto-nudge emails when clients go silent</li>
