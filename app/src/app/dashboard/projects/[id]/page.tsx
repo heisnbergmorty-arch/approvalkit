@@ -51,6 +51,13 @@ export default async function ProjectDetail({ params }: Props) {
           >
             Open ↗
           </a>
+          <a
+            href={`/api/projects/${project.id}/export.csv`}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm hover:border-slate-500"
+            title="Download timestamped log of every comment and approval — useful for invoicing and scope-creep disputes."
+          >
+            ⬇ Export approval log (CSV)
+          </a>
         </div>
       </section>
 
@@ -70,6 +77,7 @@ export default async function ProjectDetail({ params }: Props) {
           {assetList.map((a) => (
             <li key={a.id} className="flex items-center justify-between px-6 py-4">
               <div>
+                <div className="font-medium">
                   {a.label}{" "}
                   <Link
                     href={`/dashboard/projects/${project.id}/compare/${encodeURIComponent(a.groupKey)}`}
@@ -77,8 +85,7 @@ export default async function ProjectDetail({ params }: Props) {
                   >
                     v{a.version} →
                   </Link>
-                
-                <div className="font-medium">{a.label} <span className="text-xs text-slate-400">v{a.version}</span></div>
+                </div>
                 <div className="text-xs text-slate-500">{a.groupKey} · {a.mimeType}</div>
               </div>
               <StatusBadge status={a.status} />
