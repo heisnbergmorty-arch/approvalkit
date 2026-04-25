@@ -6,9 +6,8 @@ export default function TermsPage() {
 
       <h2>Use</h2>
       <p>
-        ApprovalKit is provided AS-IS under the license terms shipped in
-        LICENSE.md of your install. By using the software you agree to those
-        terms.
+        ApprovalKit is provided AS-IS. By using the service you agree to these
+        terms. Your access is tied to the email you used at checkout.
       </p>
 
       <h2>Acceptable use</h2>
@@ -19,11 +18,11 @@ export default function TermsPage() {
       </ul>
 
       <h2>Refunds</h2>
-      <p>14-day full refund on any paid license. Email the address on your receipt.</p>
+      <p>30-day full refund, no questions asked. Email the address on your receipt.</p>
 
       <h2>Liability</h2>
       <p>
-        We're not liable for damages arising from use of the software, lost
+        We're not liable for damages arising from use of the service, lost
         data, missed approvals, or your client choosing the wrong logo.
       </p>
     </main>

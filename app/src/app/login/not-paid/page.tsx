@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Get access — ApprovalKit",
-  description: "ApprovalKit is paid access. Buy a license to log in.",
+  description: "ApprovalKit is paid access. Get lifetime access to log in.",
 };
 
 export default function NotPaidPage() {

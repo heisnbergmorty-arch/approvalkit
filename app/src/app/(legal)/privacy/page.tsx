@@ -13,12 +13,12 @@ export default function PrivacyPage() {
 
       <h2>Where it's stored</h2>
       <p>
-        ApprovalKit is self-hosted by default. <strong>Your data lives on your
-        own database and storage</strong> — we never see it.
+        Your data lives in our hosted database. We don't share, sell, or use
+        it for anything other than running ApprovalKit for you.
       </p>
       <p>
-        If you use ApprovalKit Cloud (hosted by us), data is stored in the EU
-        on Neon Postgres and Cloudflare R2.
+        Files (mockups, comments) are stored in encrypted object storage.
+        Database is hosted on managed Postgres in the US.
       </p>
 
       <h2>What we share</h2>
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
       </p>
 
       <h2>Contact</h2>
-      <p>Questions? Reply to any email from the system or open an issue on the repo.</p>
+      <p>Questions? Email heisnbergmorty@gmail.com.</p>
     </main>
   );
 }
