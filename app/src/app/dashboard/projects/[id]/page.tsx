@@ -126,9 +126,21 @@ export default async function ProjectDetail({ params }: Props) {
             </li>
           )}
           {assetList.map((a) => (
-            <li key={a.id} className="flex items-center justify-between px-6 py-4">
-              <div>
-                <div className="font-medium">
+            <li key={a.id} className="flex items-center gap-4 px-6 py-4">
+              {a.mimeType?.startsWith("image/") ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={a.fileUrl}
+                  alt={a.label}
+                  className="h-14 w-14 flex-none rounded-md border border-slate-200 bg-slate-50 object-cover"
+                />
+              ) : (
+                <div className="flex h-14 w-14 flex-none items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-2xl">
+                  📄
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="truncate font-medium">
                   {a.label}{" "}
                   <Link
                     href={`/dashboard/projects/${project.id}/compare/${encodeURIComponent(a.groupKey)}`}
@@ -137,8 +149,18 @@ export default async function ProjectDetail({ params }: Props) {
                     v{a.version} →
                   </Link>
                 </div>
-                <div className="text-xs text-slate-500">{a.groupKey} · {a.mimeType}</div>
+                <div className="truncate text-xs text-slate-500">
+                  {a.groupKey} · {a.mimeType}
+                </div>
               </div>
+              <a
+                href={a.fileUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="hidden text-xs text-slate-400 hover:text-brand-600 hover:underline sm:inline"
+              >
+                Open ↗
+              </a>
               <StatusBadge status={a.status} />
             </li>
           ))}
