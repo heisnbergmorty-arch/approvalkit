@@ -16,6 +16,18 @@ interface Entry {
 const entries: Entry[] = [
   {
     date: "2025-01",
+    version: "1.5",
+    title: "Frictionless uploads & a public face",
+    bullets: [
+      "Drag-and-drop multi-file upload — drop a folder of versions, labels and group keys are auto-derived from filenames.",
+      "Editable client email opener and sign-off, per agency. No more generic “has work ready for your review”.",
+      "Setup wizard now drops you straight into creating your first project — first review link in under 60 seconds.",
+      "Public agency profile at /a/{slug} — share-able landing page with your stats and recent work, fully cached.",
+      "Landing page now shows a real product preview above the fold so prospects see the experience before clicking.",
+    ],
+  },
+  {
+    date: "2025-01",
     version: "1.4",
     title: "Dashboard productization",
     bullets: [
