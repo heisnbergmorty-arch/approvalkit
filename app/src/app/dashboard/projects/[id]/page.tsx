@@ -13,6 +13,7 @@ import { DeleteAssetButton } from "./delete-asset-button";
 import { NotifyModeSelector } from "./notify-mode-selector";
 import { EditableProjectHeader } from "./editable-project-header";
 import { ResolveToggle } from "./resolve-toggle";
+import { AgencyReplyForm } from "./agency-reply-form";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -293,6 +294,13 @@ export default async function ProjectDetail({ params }: Props) {
                       >
                         {e.body.length > 200 ? e.body.slice(0, 200) + "…" : e.body}
                       </blockquote>
+                      {!e.isFromAgency && (
+                        <AgencyReplyForm
+                          assetId={e.assetId}
+                          projectId={project.id}
+                          assetLabel={e.label}
+                        />
+                      )}
                     </div>
                   )}
                   {e.kind === "approval" && (

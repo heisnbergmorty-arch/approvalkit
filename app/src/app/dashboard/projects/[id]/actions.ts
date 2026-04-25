@@ -165,3 +165,19 @@ export async function toggleCommentResolved(commentId: string, projectId: string
   return { ok: true };
 }
 
+
+export async function postAgencyReply(assetId: string, projectId: string, body: string) {
+  const aid = idSchema.parse(assetId);
+  const pid = idSchema.parse(projectId);
+  const text = (body || '').trim().slice(0, 2000);
+  if (!text) throw new Error('EMPTY_BODY');
+  const { agency } = await requireAgency();
+  const a = await db.query.assets.findFirst({ where: and(eq(assets.id, aid), eq(assets.projectId, pid)) });
+  if (!a) throw new Error('NOT_FOUND');
+  const p = await db.query.projects.findFirst({ where: and(eq(projects.id, pid), eq(projects.agencyId, agency.id)) });
+  if (!p) throw new Error('NOT_FOUND');
+  await db.insert(comments).values({ assetId: aid, authorName: agency.name, isFromAgency: true, body: text });
+  revalidatePath('/dashboard/projects/' + pid);
+  return { ok: true };
+}
+
