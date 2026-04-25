@@ -104,3 +104,18 @@ export async function updateAssetNote(assetId: string, projectId: string, note: 
   revalidatePath(`/dashboard/projects/${pid}`);
   return { ok: true };
 }
+
+export async function updateProjectNotifyMode(
+  projectId: string,
+  mode: "instant" | "digest" | "off",
+) {
+  const id = idSchema.parse(projectId);
+  const { agency } = await requireAgency();
+  if (!["instant", "digest", "off"].includes(mode)) throw new Error("INVALID_MODE");
+  await db
+    .update(projects)
+    .set({ notifyMode: mode })
+    .where(and(eq(projects.id, id), eq(projects.agencyId, agency.id)));
+  revalidatePath(`/dashboard/projects/${id}`);
+  return { ok: true };
+}

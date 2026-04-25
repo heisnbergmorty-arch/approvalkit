@@ -201,9 +201,9 @@ export async function approveAsset(input: z.infer<typeof approveSchema>) {
   });
   await db.update(assets).set({ status: "approved" }).where(eq(assets.id, asset.id));
 
-  // Notify the agency owner
+  // Notify the agency owner (only when project is in instant mode)
   const ownerEmail = await getAgencyOwnerEmail(project.agencyId);
-  if (ownerEmail) {
+  if (ownerEmail && project.notifyMode === "instant") {
     const tpl = approvedEmail({
       agencyContactEmail: ownerEmail,
       brandColor: project.agency.brandColor ?? "#6366f1",
@@ -272,7 +272,7 @@ export async function addComment(input: z.infer<typeof commentSchema>) {
   // Notify the agency owner if comment is from client
   if (!data.isFromAgency) {
     const ownerEmail = await getAgencyOwnerEmail(project.agencyId);
-    if (ownerEmail) {
+    if (ownerEmail && project.notifyMode === "instant") {
       const tpl = commentEmail({
         brandColor: project.agency.brandColor ?? "#6366f1",
         authorName: data.authorName,

@@ -10,6 +10,7 @@ import { ProjectActions } from "./project-actions";
 import { SendLinkButton } from "./send-link-button";
 import { AssetNote } from "./asset-note";
 import { DeleteAssetButton } from "./delete-asset-button";
+import { NotifyModeSelector } from "./notify-mode-selector";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -117,6 +118,13 @@ export default async function ProjectDetail({ params }: Props) {
       <section className="mt-8">
         <h2 className="text-lg font-semibold">Upload work for review</h2>
         <UploadAssetForm projectId={project.id} />
+      </section>
+
+      <section className="mt-8">
+        <NotifyModeSelector
+          projectId={project.id}
+          defaultMode={project.notifyMode}
+        />
       </section>
 
       <section className="mt-10">

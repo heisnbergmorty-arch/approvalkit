@@ -116,6 +116,9 @@ export const projects = pgTable(
     reviewSlug: text("reviewSlug").notNull().unique(), // public-but-unguessable token in URL
     status: text("status", { enum: ["active", "archived"] }).default("active").notNull(),
     description: text("description"),
+    notifyMode: text("notifyMode", {
+      enum: ["instant", "digest", "off"],
+    }).default("instant").notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   (t) => ({ agencyIdx: index("projects_agency_idx").on(t.agencyId) }),
