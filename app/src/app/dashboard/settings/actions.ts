@@ -77,3 +77,37 @@ export async function testWebhook(): Promise<{ ok: boolean; status?: number; err
     return { ok: false, error: e instanceof Error ? e.message : "request failed" };
   }
 }
+
+export async function sendTestEmail(): Promise<{
+  ok: boolean;
+  to?: string;
+  error?: string;
+}> {
+  const { agency, userId } = await requireAgency();
+  const { db: dbi } = await import("@/db/client");
+  const { users } = await import("@/db/schema");
+  const u = await dbi.query.users.findFirst({ where: eq(users.id, userId) });
+  const to = u?.email;
+  if (!to) return { ok: false, error: "No email on your account." };
+
+  // Lazy import to avoid pulling Resend into other server actions' bundles.
+  const { sendEmail, reviewLinkEmail } = await import("@/lib/email");
+  try {
+    await sendEmail({
+      to,
+      subject: `[Test] ${agency.name} — review work for Sample Project`,
+      html: reviewLinkEmail({
+        agencyName: agency.name,
+        brandColor: agency.brandColor ?? "#6366f1",
+        clientName: "Test Client",
+        projectName: "Sample Project",
+        reviewUrl: "https://approvalkit-topaz.vercel.app/demo",
+        intro: agency.emailIntro,
+        signature: agency.emailSignature,
+      }),
+    });
+    return { ok: true, to };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "send failed" };
+  }
+}

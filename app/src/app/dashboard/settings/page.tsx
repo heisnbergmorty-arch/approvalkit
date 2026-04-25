@@ -1,6 +1,7 @@
 import { requireAgency } from "@/lib/session";
 import { updateSettings } from "./actions";
 import { TestWebhookButton } from "./test-webhook-button";
+import { TestEmailButton } from "./test-email-button";
 import { LogoUploader } from "@/components/logo-uploader";
 import { BrandColorPicker } from "@/components/brand-color-picker";
 import { db } from "@/db/client";
@@ -94,6 +95,7 @@ export default async function SettingsPage() {
               Shown at the bottom of every client email. Defaults to your agency name.
             </p>
           </div>
+          <TestEmailButton />
         </Section>
 
         <button className="rounded-lg bg-brand-500 px-5 py-2.5 font-medium text-white hover:bg-brand-600">
