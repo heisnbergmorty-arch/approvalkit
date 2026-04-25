@@ -37,6 +37,8 @@ export default async function ProjectDetail({ params }: Props) {
             id: comments.id,
             assetId: comments.assetId,
             isFromAgency: comments.isFromAgency,
+            authorName: comments.authorName,
+            body: comments.body,
             createdAt: comments.createdAt,
           })
           .from(comments)
@@ -45,6 +47,7 @@ export default async function ProjectDetail({ params }: Props) {
           .select({
             id: approvals.id,
             assetId: approvals.assetId,
+            approverName: approvals.approverName,
             approvedAt: approvals.approvedAt,
           })
           .from(approvals)
@@ -52,7 +55,52 @@ export default async function ProjectDetail({ params }: Props) {
       ])
     : [[], []];
 
-  const insights = computeInsights(assetList, commentRows, approvalRows);
+  const insights = computeInsights(
+    assetList,
+    commentRows.map((c) => ({ id: c.id, assetId: c.assetId, isFromAgency: c.isFromAgency, createdAt: c.createdAt })),
+    approvalRows.map((a) => ({ id: a.id, assetId: a.assetId, approvedAt: a.approvedAt })),
+  );
+
+  const assetById = new Map(assetList.map((a) => [a.id, a]));
+  type TimelineEntry =
+    | { kind: "upload"; at: Date; assetId: string; label: string; version: number }
+    | { kind: "comment"; at: Date; assetId: string; label: string; version: number; author: string; isFromAgency: boolean; body: string }
+    | { kind: "approval"; at: Date; assetId: string; label: string; version: number; approver: string };
+  const timeline: TimelineEntry[] = [
+    ...assetList.map<TimelineEntry>((a) => ({
+      kind: "upload" as const,
+      at: a.createdAt,
+      assetId: a.id,
+      label: a.label,
+      version: a.version,
+    })),
+    ...commentRows.map<TimelineEntry | null>((c) => {
+      const a = assetById.get(c.assetId);
+      if (!a) return null;
+      return {
+        kind: "comment" as const,
+        at: c.createdAt,
+        assetId: c.assetId,
+        label: a.label,
+        version: a.version,
+        author: c.authorName,
+        isFromAgency: c.isFromAgency,
+        body: c.body,
+      };
+    }).filter((x): x is TimelineEntry => x !== null),
+    ...approvalRows.map<TimelineEntry | null>((ap) => {
+      const a = assetById.get(ap.assetId);
+      if (!a) return null;
+      return {
+        kind: "approval" as const,
+        at: ap.approvedAt,
+        assetId: ap.assetId,
+        label: a.label,
+        version: a.version,
+        approver: ap.approverName,
+      };
+    }).filter((x): x is TimelineEntry => x !== null),
+  ].sort((a, b) => b.at.getTime() - a.at.getTime());
 
   const reviewUrl = appUrl(`/review/${project.reviewSlug}`);
 
@@ -190,6 +238,71 @@ export default async function ProjectDetail({ params }: Props) {
           ))}
         </ul>
       </section>
+
+      {timeline.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold">Project changelog</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Every upload, comment, and approval in chronological order. Share-friendly proof of the
+            full conversation.
+          </p>
+          <ol className="mt-4 space-y-2">
+            {timeline.slice(0, 30).map((e, i) => (
+              <li
+                key={`${e.kind}-${e.assetId}-${i}`}
+                className="flex gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm"
+              >
+                <span className="mt-0.5 text-base">
+                  {e.kind === "approval" ? "✅" : e.kind === "comment" ? "💬" : "⬆"}
+                </span>
+                <div className="min-w-0 flex-1">
+                  {e.kind === "upload" && (
+                    <div>
+                      <span className="font-medium">{e.label}</span>{" "}
+                      <span className="text-slate-500">v{e.version} uploaded</span>
+                    </div>
+                  )}
+                  {e.kind === "comment" && (
+                    <div>
+                      <div>
+                        <span className="font-medium">{e.author}</span>
+                        {e.isFromAgency && (
+                          <span className="ml-1 rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium uppercase text-brand-700">
+                            you
+                          </span>
+                        )}{" "}
+                        <span className="text-slate-500">on</span>{" "}
+                        <span className="font-medium">{e.label}</span>{" "}
+                        <span className="text-xs text-slate-400">v{e.version}</span>
+                      </div>
+                      <blockquote className="mt-1 border-l-2 border-slate-200 pl-2 text-slate-600">
+                        {e.body.length > 200 ? e.body.slice(0, 200) + "…" : e.body}
+                      </blockquote>
+                    </div>
+                  )}
+                  {e.kind === "approval" && (
+                    <div>
+                      <span className="font-medium">{e.approver}</span>{" "}
+                      <span className="text-slate-500">approved</span>{" "}
+                      <span className="font-medium">{e.label}</span>{" "}
+                      <span className="text-xs text-slate-400">v{e.version}</span>
+                    </div>
+                  )}
+                  <div className="mt-1 text-[11px] text-slate-400">
+                    {e.at.toLocaleString()}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+          {timeline.length > 30 && (
+            <p className="mt-3 text-xs text-slate-400">
+              Showing 30 most recent of {timeline.length} events. Download the CSV above for the
+              full history.
+            </p>
+          )}
+        </section>
+      )}
     </main>
   );
 }
