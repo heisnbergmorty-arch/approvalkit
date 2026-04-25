@@ -117,6 +117,25 @@ export default async function SettingsPage() {
         </div>
       )}
 
+      <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <div className="font-medium text-slate-900">Your public profile</div>
+        <p className="mt-1 text-slate-600">
+          Share this link in your portfolio, proposals, or socials — clients see your branded review hub.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <code className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-700">
+            /a/{agency.slug}
+          </code>
+          <Link
+            href={`/a/${agency.slug}`}
+            target="_blank"
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-500"
+          >
+            View public profile ↗
+          </Link>
+        </div>
+      </div>
+
       <section className="mt-12 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm">
         <div className="font-semibold">Webhook payload example</div>
         <pre className="mt-2 overflow-x-auto rounded-md bg-slate-900 p-3 text-xs text-slate-100">

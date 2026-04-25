@@ -219,6 +219,59 @@ export default function Home() {
           <span className="inline-flex items-center gap-1">🌍 Self-hostable on your domain</span>
           <span className="inline-flex items-center gap-1">💳 Pay once, own forever</span>
         </div>
+
+        {/* Product preview mock — shows the actual review experience above the fold */}
+        <div className="mx-auto mt-14 max-w-3xl">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-brand-500/10">
+            <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
+              <span className="h-3 w-3 rounded-full bg-red-400" />
+              <span className="h-3 w-3 rounded-full bg-yellow-400" />
+              <span className="h-3 w-3 rounded-full bg-green-400" />
+              <span className="ml-3 truncate rounded-md bg-white px-3 py-1 font-mono text-xs text-slate-500">
+                review.pixelpine.studio/lumen-brand-launch
+              </span>
+            </div>
+            <div className="grid gap-0 sm:grid-cols-[1fr_280px]">
+              <div className="bg-slate-50 p-6">
+                <div className="aspect-[4/3] rounded-lg border border-slate-200 bg-gradient-to-br from-brand-500 via-purple-500 to-pink-500 p-6 shadow-sm">
+                  <div className="flex h-full flex-col items-center justify-center text-white">
+                    <div className="text-3xl font-bold tracking-tight">Lumen</div>
+                    <div className="mt-1 text-xs opacity-80">Concept B · v3</div>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center gap-2 text-xs">
+                  <span className="rounded-md bg-white px-2 py-1 font-medium text-slate-600 shadow-sm">v1</span>
+                  <span className="rounded-md bg-white px-2 py-1 font-medium text-slate-600 shadow-sm">v2</span>
+                  <span className="rounded-md bg-brand-500 px-2 py-1 font-medium text-white shadow-sm">v3 · current</span>
+                </div>
+              </div>
+              <aside className="border-t border-slate-200 bg-white p-5 sm:border-l sm:border-t-0">
+                <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Feedback
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div className="rounded-lg bg-slate-50 p-3">
+                    <div className="text-xs font-semibold text-slate-700">Maya</div>
+                    <div className="mt-1 text-slate-600">Love the gradient — can we tighten the kerning?</div>
+                  </div>
+                  <div className="rounded-lg bg-slate-50 p-3">
+                    <div className="text-xs font-semibold text-slate-700">You</div>
+                    <div className="mt-1 text-slate-600">Updated in v3 — take a look 👇</div>
+                  </div>
+                </div>
+                <button className="mt-5 w-full rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm">
+                  ✓ Approve this version
+                </button>
+                <p className="mt-2 text-center text-[10px] text-slate-400">
+                  No login. One click. Auditable.
+                </p>
+              </aside>
+            </div>
+          </div>
+          <p className="mt-3 text-center text-xs text-slate-500">
+            What your client sees. Branded with your logo and color.
+          </p>
+        </div>
       </section>
 
       {/* Features */}
