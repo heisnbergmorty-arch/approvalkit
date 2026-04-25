@@ -7,7 +7,15 @@ import { eq, inArray, desc } from "drizzle-orm";
 
 export const metadata = { title: "Activity" };
 
-export default async function ActivityPage() {
+interface Props {
+  searchParams: Promise<{ q?: string; kind?: string; project?: string }>;
+}
+
+export default async function ActivityPage({ searchParams }: Props) {
+  const sp = await searchParams;
+  const q = (sp.q ?? "").trim().toLowerCase();
+  const kindFilter = sp.kind === "comment" || sp.kind === "approval" || sp.kind === "upload" ? sp.kind : "";
+  const projectFilter = (sp.project ?? "").trim();
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
   const agency = await db.query.agencies.findFirst({
@@ -120,8 +128,20 @@ export default async function ActivityPage() {
       actor: "you",
     })),
   ]
-    .sort((a, b) => b.at.getTime() - a.at.getTime())
-    .slice(0, 80);
+    .sort((a, b) => b.at.getTime() - a.at.getTime());
+
+  const filtered = events.filter((e) => {
+    if (kindFilter && e.kind !== kindFilter) return false;
+    if (projectFilter && e.projectId !== projectFilter) return false;
+    if (q) {
+      const p = projectById.get(e.projectId);
+      const hay = `${e.actor} ${e.label} ${e.detail} ${p?.name ?? ""}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  }).slice(0, 80);
+
+  const hasFilter = Boolean(q || kindFilter || projectFilter);
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
@@ -130,13 +150,58 @@ export default async function ActivityPage() {
         Most recent comments, approvals, and uploads across all your projects.
       </p>
 
-      {events.length === 0 ? (
+      <form className="mt-6 flex flex-wrap gap-2 rounded-xl border border-slate-200 bg-white p-3">
+        <input
+          name="q"
+          defaultValue={q}
+          placeholder="Search text, actor, asset, project…"
+          className="flex-1 min-w-[180px] rounded-md border border-slate-300 px-3 py-1.5 text-sm"
+        />
+        <select
+          name="kind"
+          defaultValue={kindFilter}
+          className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+        >
+          <option value="">All events</option>
+          <option value="comment">Comments</option>
+          <option value="approval">Approvals</option>
+          <option value="upload">Uploads</option>
+        </select>
+        <select
+          name="project"
+          defaultValue={projectFilter}
+          className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+        >
+          <option value="">All projects</option>
+          {projectRows.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+        <button
+          type="submit"
+          className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
+        >
+          Filter
+        </button>
+        {hasFilter && (
+          <Link
+            href="/dashboard/activity"
+            className="flex items-center rounded-md border border-slate-300 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
+          >
+            Clear
+          </Link>
+        )}
+      </form>
+
+      {filtered.length === 0 ? (
         <div className="mt-8 rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
-          Quiet so far. Send a review link and feedback will land here.
+          {hasFilter ? "No events match those filters." : "Quiet so far. Send a review link and feedback will land here."}
         </div>
       ) : (
         <ol className="mt-8 space-y-3">
-          {events.map((e) => {
+          {filtered.map((e) => {
             const project = projectById.get(e.projectId);
             return (
               <li
