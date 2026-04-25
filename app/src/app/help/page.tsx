@@ -106,6 +106,44 @@ const sections: { title: string; items: QA[] }[] = [
     ],
   },
   {
+    title: "Sharing & security",
+    items: [
+      {
+        q: "What if my client forwards the review link to someone else?",
+        a: (
+          <>
+            By default, the review link is the credential — anyone who has it can view, comment,
+            and approve. The slug is long and unguessable, and we send <code>noindex</code>{" "}
+            headers so search engines won&apos;t cache it. For high-stakes work (legal docs,
+            unreleased branding), open the project page and turn on <b>Review-link PIN</b> — a
+            4–8 digit code your client must enter before they see anything. Send the PIN by chat
+            or a separate email, never in the same message as the link.
+          </>
+        ),
+      },
+      {
+        q: "Will my review pages show up in Google search?",
+        a: (
+          <>
+            No. Every <code>/review/[slug]</code> page sends <code>X-Robots-Tag: noindex,
+            nofollow</code> via metadata. Even if a link leaks publicly, it won&apos;t be
+            indexed. (We can&apos;t prevent screenshots — for that, use the PIN.)
+          </>
+        ),
+      },
+      {
+        q: "Who can see internal asset notes?",
+        a: (
+          <>
+            Only you (and any signed-in agency owner). Internal notes never appear on the client
+            review page, in webhooks, in client emails, or in any CSV export — they live solely
+            on your dashboard.
+          </>
+        ),
+      },
+    ],
+  },
+  {
     title: "Integrations",
     items: [
       {

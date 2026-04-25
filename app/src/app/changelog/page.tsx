@@ -30,6 +30,8 @@ const entries: Entry[] = [
       "Agency reply on any client comment — your response appears on the client's review page.",
       "Image lightbox on the review page — zoom into full-resolution assets.",
       "Keyboard shortcuts on the review page (j/k navigation, ? help) for power-user clients.",
+      "Optional 4–8 digit PIN protection on review links for high-stakes projects (NDAs, unreleased work). Enforced on render and on every API call.",
+      "Review pages now send noindex/nofollow so leaked links can't be Google-indexed.",
       "Dashboard sort options (recent / oldest pending / name) so the next-action project is always at the top.",
       "Asset thumbnails, internal asset notes (agency-only), one-click delete, and a “Waiting on client Nd” badge on stale projects.",
       "Sign-in link added to landing nav and footer — existing users no longer have to type /login by hand.",

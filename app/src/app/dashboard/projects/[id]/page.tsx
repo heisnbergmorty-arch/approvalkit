@@ -126,7 +126,14 @@ export default async function ProjectDetail({ params }: Props) {
       </header>
 
       <section className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-5">
-        <div className="text-xs font-medium uppercase tracking-wider text-slate-500">Client review link</div>
+        <div className="flex items-center gap-2">
+          <div className="text-xs font-medium uppercase tracking-wider text-slate-500">Client review link</div>
+          {project.reviewPin && (
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-700">
+              🔒 PIN protected
+            </span>
+          )}
+        </div>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <code className="flex-1 break-all rounded-lg bg-white px-3 py-2 text-sm">{reviewUrl}</code>
           <CopyButton text={reviewUrl} />
