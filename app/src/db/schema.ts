@@ -119,6 +119,7 @@ export const projects = pgTable(
     notifyMode: text("notifyMode", {
       enum: ["instant", "digest", "off"],
     }).default("instant").notNull(),
+    reviewPin: text("reviewPin"), // optional 4-8 digit PIN gate on the review link
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   (t) => ({ agencyIdx: index("projects_agency_idx").on(t.agencyId) }),

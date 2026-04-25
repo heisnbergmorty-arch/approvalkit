@@ -14,6 +14,7 @@ import { NotifyModeSelector } from "./notify-mode-selector";
 import { EditableProjectHeader } from "./editable-project-header";
 import { ResolveToggle } from "./resolve-toggle";
 import { AgencyReplyForm } from "./agency-reply-form";
+import { ReviewPinManager } from "./review-pin-manager";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -182,6 +183,10 @@ export default async function ProjectDetail({ params }: Props) {
           projectId={project.id}
           defaultMode={project.notifyMode}
         />
+      </section>
+
+      <section className="mt-4">
+        <ReviewPinManager projectId={project.id} defaultPin={project.reviewPin} />
       </section>
 
       <section className="mt-10">

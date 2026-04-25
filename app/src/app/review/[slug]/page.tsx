@@ -2,10 +2,16 @@ import { db } from "@/db/client";
 import { projects, assets, comments } from "@/db/schema";
 import { eq, and, desc, inArray } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { AssetReviewCard } from "./asset-card";
 import { ReviewFilters } from "./review-filters";
 import { BulkApproveButton } from "./bulk-approve";
 import { ReviewKeyboardShortcuts } from "./keyboard-shortcuts";
+import { ReviewPinGate } from "./pin-gate";
+
+export const metadata = {
+  robots: { index: false, follow: false, nocache: true },
+};
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -25,6 +31,22 @@ export default async function ReviewPage({ params, searchParams }: Props) {
   });
   if (!project) notFound();
 
+  const brandColor = project.agency.brandColor ?? "#6366f1";
+
+  if (project.reviewPin) {
+    const jar = await cookies();
+    const cookiePin = jar.get(`rvpin_${project.id}`)?.value;
+    if (cookiePin !== project.reviewPin) {
+      return (
+        <ReviewPinGate
+          slug={slug}
+          brandColor={brandColor}
+          agencyName={project.agency.name}
+        />
+      );
+    }
+  }
+
   const currentAssets = await db.query.assets.findMany({
     where: and(eq(assets.projectId, project.id), eq(assets.isCurrentVersion, true)),
     orderBy: [desc(assets.createdAt)],
@@ -43,7 +65,6 @@ export default async function ReviewPage({ params, searchParams }: Props) {
     commentsByAsset.get(c.assetId)!.push(c);
   }
 
-  const brandColor = project.agency.brandColor ?? "#6366f1";
   const counts = {
     all: currentAssets.length,
     pending: currentAssets.filter((a) => a.status !== "approved").length,

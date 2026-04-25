@@ -181,3 +181,18 @@ export async function postAgencyReply(assetId: string, projectId: string, body: 
   return { ok: true };
 }
 
+
+export async function updateReviewPin(projectId: string, pin: string | null) {
+  const id = idSchema.parse(projectId);
+  const { agency } = await requireAgency();
+  let value: string | null = null;
+  if (pin && pin.trim()) {
+    const cleaned = pin.replace(/\D/g, '');
+    if (cleaned.length < 4 || cleaned.length > 8) throw new Error('PIN_LENGTH');
+    value = cleaned;
+  }
+  await db.update(projects).set({ reviewPin: value }).where(and(eq(projects.id, id), eq(projects.agencyId, agency.id)));
+  revalidatePath('/dashboard/projects/' + id);
+  return { ok: true, pin: value };
+}
+
