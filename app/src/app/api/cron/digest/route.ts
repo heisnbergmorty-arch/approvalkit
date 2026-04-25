@@ -38,7 +38,11 @@ export async function GET(req: Request) {
       .from(approvals)
       .innerJoin(assets, eq(assets.id, approvals.assetId))
       .innerJoin(projects, eq(projects.id, assets.projectId))
-      .where(and(eq(projects.agencyId, a.id), gte(approvals.approvedAt, since)));
+      .where(and(
+        eq(projects.agencyId, a.id),
+        eq(projects.notifyMode, "digest"),
+        gte(approvals.approvedAt, since),
+      ));
 
     const newComments = await db
       .select({
@@ -52,6 +56,7 @@ export async function GET(req: Request) {
       .innerJoin(projects, eq(projects.id, assets.projectId))
       .where(and(
         eq(projects.agencyId, a.id),
+        eq(projects.notifyMode, "digest"),
         gte(comments.createdAt, since),
         eq(comments.isFromAgency, false),
       ));

@@ -16,6 +16,21 @@ interface Entry {
 const entries: Entry[] = [
   {
     date: "2025-01",
+    version: "1.6",
+    title: "Power-user polish: less noise, more control",
+    bullets: [
+      "Per-project notification mode — Instant / Daily digest / Off. Stop the inbox-bombing when you have 10 active reviews.",
+      "Inline-edit project name, client name/email, and description directly from the project page (no more re-creating).",
+      "Account-wide CSV export — every comment and approval across all projects in one file (Settings → Your data).",
+      "Activity feed search and filters — by event type (comments / approvals / uploads), by project, and free-text.",
+      "Per-send custom message on review-link emails — override your default opener with a one-line context note for that specific round.",
+      "Asset thumbnails, internal asset notes (agency-only), one-click delete, and a “Waiting on client Nd” badge on stale projects.",
+      "Sign-in link added to landing nav and footer — existing users no longer have to type /login by hand.",
+      "Refund window standardized to 14 days everywhere; “Unlimited team members” copy replaced with honest single-seat language.",
+    ],
+  },
+  {
+    date: "2025-01",
     version: "1.5",
     title: "Frictionless uploads & a public face",
     bullets: [
