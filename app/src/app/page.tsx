@@ -18,12 +18,31 @@ const features = [
     body: "Upload v2 next to v1. Clients see what changed without scrolling through 14 emails.",
   },
   {
-    title: "Self-hosted, $0/month",
-    body: "Runs on Vercel + Neon + Supabase free tiers. Your clients, your domain, your database.",
+    title: "Your brand on every page",
+    body: "Your logo, your agency name, your subdomain (review.youragency.com). Clients never see ours.",
   },
   {
-    title: "Lifetime license",
-    body: "One payment. Modify, white-label, ship to your clients as part of agency packages.",
+    title: "Approval logs for invoicing",
+    body: "Timestamped record of every approval. Use as proof for invoices and scope-creep disputes.",
+  },
+];
+
+const objections = [
+  {
+    q: "Is this a subscription?",
+    a: "No. Pay $149 once, use it forever — unlimited projects, unlimited clients, unlimited revisions. Includes all future features.",
+  },
+  {
+    q: "Do my clients need to sign up?",
+    a: "Never. They open a branded link, click Approve, or pin a comment. Zero friction.",
+  },
+  {
+    q: "Can I use my own domain?",
+    a: "Yes. Add a CNAME and your clients land on review.youragency.com. We set it up for you within 24h.",
+  },
+  {
+    q: "What if it doesn't work for me?",
+    a: "30-day refund, no questions asked. Email and you get your money back.",
   },
 ];
 
@@ -38,8 +57,9 @@ export default function Home() {
           Get design approvals in <span className="text-brand-600">1 day</span>, not 1 week.
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600">
-          A branded review portal where clients approve work in one click or pin
-          comments to the exact pixel. Stop chasing 47-email approval threads.
+          Send your clients a branded review link. They approve in one click — or
+          click the exact pixel they want changed. No login, no Figma, no 47-email
+          approval threads.
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <Link
@@ -56,7 +76,7 @@ export default function Home() {
           </Link>
         </div>
         <p className="mt-4 text-sm text-slate-500">
-          Demo project · approve or comment · no signup required
+          Try the demo as a client · approve or pin a comment · no signup
         </p>
       </section>
 
@@ -76,27 +96,50 @@ export default function Home() {
 
       <section className="mx-auto max-w-3xl px-6 py-20 text-center">
         <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-          One-time payment. Lifetime updates.
+          One payment. Lifetime access.
         </h2>
+        <p className="mt-3 text-slate-600">
+          We host it. You log in. No servers to manage, no monthly bill.
+        </p>
         <div className="mt-10 inline-block rounded-2xl border border-brand-200 bg-white p-8 text-left shadow-sm">
-          <div className="text-sm font-medium text-brand-600">Lifetime license</div>
+          <div className="text-sm font-medium text-brand-600">Lifetime access</div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-5xl font-bold text-slate-900">$149</span>
-            <span className="text-sm text-slate-500">one-time</span>
+            <span className="text-sm text-slate-500">one-time · no subscription</span>
           </div>
           <ul className="mt-6 space-y-2 text-sm text-slate-700">
-            <li>✓ Full source code (Next.js 15 + Drizzle + Postgres)</li>
-            <li>✓ Self-host on $0/month free tiers</li>
-            <li>✓ Magic-link auth, file uploads, auto-nudges</li>
-            <li>✓ MIT-style license — white-label, resell to clients</li>
-            <li>✓ All future updates included</li>
+            <li>✓ Unlimited projects, clients, and revisions</li>
+            <li>✓ Branded review pages with your logo and agency name</li>
+            <li>✓ Custom subdomain (review.youragency.com) — included</li>
+            <li>✓ Auto-nudge emails when clients go silent</li>
+            <li>✓ Approval logs for invoicing and dispute proof</li>
+            <li>✓ Magic-link login — no passwords to manage</li>
+            <li>✓ All future features included, forever</li>
+            <li>✓ 30-day refund, no questions asked</li>
           </ul>
           <a
-            href="https://gumroad.com/l/approvalkit"
+            href="https://heisnberg4.gumroad.com/l/tneacr"
             className="mt-6 block rounded-lg bg-brand-500 px-5 py-3 text-center font-medium text-white hover:bg-brand-600"
           >
-            Buy on Gumroad →
+            Get lifetime access →
           </a>
+          <p className="mt-3 text-center text-xs text-slate-500">
+            Secure checkout via Gumroad
+          </p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-3xl px-6 py-16">
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 text-center">
+          Common questions
+        </h2>
+        <div className="mt-10 space-y-6">
+          {objections.map((o) => (
+            <div key={o.q} className="rounded-xl border border-slate-200 bg-white p-6">
+              <h3 className="text-base font-semibold text-slate-900">{o.q}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">{o.a}</p>
+            </div>
+          ))}
         </div>
       </section>
 
