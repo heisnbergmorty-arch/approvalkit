@@ -20,8 +20,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <Link href="/dashboard" className="hover:text-slate-900">
               Projects
             </Link>
+            <Link href="/dashboard/activity" className="hover:text-slate-900">
+              Activity
+            </Link>
             <Link href="/dashboard/settings" className="hover:text-slate-900">
               Settings
+            </Link>
+            <Link href="/dashboard/billing" className="hover:text-slate-900">
+              Billing
             </Link>
             <Link href="/demo" target="_blank" className="hover:text-slate-900">
               View demo ↗

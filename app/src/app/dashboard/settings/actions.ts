@@ -39,3 +39,35 @@ export async function updateSettings(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/settings");
 }
+
+export async function testWebhook(): Promise<{ ok: boolean; status?: number; error?: string }> {
+  const { agency } = await requireAgency();
+  if (!agency.webhookUrl) {
+    return { ok: false, error: "No webhook URL saved yet. Save one above first." };
+  }
+  const payload = {
+    event: "asset.approved" as const,
+    agencyId: agency.id,
+    projectId: "test-project",
+    projectName: "ApprovalKit test ping",
+    assetLabel: "Logo — Concept B",
+    actorName: "ApprovalKit",
+    url: "https://approvalkit-topaz.vercel.app/dashboard",
+    timestamp: new Date().toISOString(),
+    test: true,
+  };
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 4000);
+    const res = await fetch(agency.webhookUrl, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+    return { ok: res.ok, status: res.status };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "request failed" };
+  }
+}

@@ -5,7 +5,7 @@ import { agencies, projects, assets, approvals, comments } from "@/db/schema";
 import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import Link from "next/link";
 
-type SearchParams = { view?: string };
+type SearchParams = { view?: string; q?: string };
 
 export default async function DashboardPage({
   searchParams,
@@ -14,6 +14,7 @@ export default async function DashboardPage({
 }) {
   const sp = await searchParams;
   const view = sp.view === "archived" ? "archived" : sp.view === "all" ? "all" : "active";
+  const query = (sp.q ?? "").trim().toLowerCase();
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -48,10 +49,17 @@ export default async function DashboardPage({
     archived: allProjects.filter((p) => p.status === "archived").length,
     all: allProjects.length,
   };
-  const projectList =
+  const projectList = (
     view === "all"
       ? allProjects
-      : allProjects.filter((p) => p.status === view);
+      : allProjects.filter((p) => p.status === view)
+  ).filter((p) =>
+    query
+      ? p.name.toLowerCase().includes(query) ||
+        p.clientName.toLowerCase().includes(query) ||
+        p.clientEmail.toLowerCase().includes(query)
+      : true,
+  );
 
   const projectIds = projectList.map((p) => p.id);
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -102,6 +110,16 @@ export default async function DashboardPage({
         <ViewTab current={view} value="active" label="Active" count={counts.active} />
         <ViewTab current={view} value="archived" label="Archived" count={counts.archived} />
         <ViewTab current={view} value="all" label="All" count={counts.all} />
+        <form className="ml-auto" action="/dashboard">
+          {view !== "active" && <input type="hidden" name="view" value={view} />}
+          <input
+            type="search"
+            name="q"
+            defaultValue={query}
+            placeholder="Search projects, clients…"
+            className="w-56 rounded-full border border-slate-300 px-3 py-1 text-xs focus:border-brand-500 focus:outline-none"
+          />
+        </form>
       </div>
 
       {projectList.length === 0 ? (

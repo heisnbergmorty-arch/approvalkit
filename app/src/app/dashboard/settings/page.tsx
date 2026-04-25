@@ -1,5 +1,6 @@
 import { requireAgency } from "@/lib/session";
 import { updateSettings } from "./actions";
+import { TestWebhookButton } from "./test-webhook-button";
 import Link from "next/link";
 
 export default async function SettingsPage() {
@@ -68,6 +69,7 @@ export default async function SettingsPage() {
             placeholder="https://hooks.slack.com/services/…"
             help="POSTed on every approve and comment event. Works with Slack incoming webhooks, Zapier, n8n, Make."
           />
+          <TestWebhookButton />
         </Section>
 
         <button className="rounded-lg bg-brand-500 px-5 py-2.5 font-medium text-white hover:bg-brand-600">
