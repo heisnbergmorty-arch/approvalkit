@@ -12,6 +12,7 @@ import { AssetNote } from "./asset-note";
 import { DeleteAssetButton } from "./delete-asset-button";
 import { NotifyModeSelector } from "./notify-mode-selector";
 import { EditableProjectHeader } from "./editable-project-header";
+import { ResolveToggle } from "./resolve-toggle";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -39,6 +40,7 @@ export default async function ProjectDetail({ params }: Props) {
             isFromAgency: comments.isFromAgency,
             authorName: comments.authorName,
             body: comments.body,
+            resolved: comments.resolved,
             createdAt: comments.createdAt,
           })
           .from(comments)
@@ -64,7 +66,7 @@ export default async function ProjectDetail({ params }: Props) {
   const assetById = new Map(assetList.map((a) => [a.id, a]));
   type TimelineEntry =
     | { kind: "upload"; at: Date; assetId: string; label: string; version: number }
-    | { kind: "comment"; at: Date; assetId: string; label: string; version: number; author: string; isFromAgency: boolean; body: string }
+    | { kind: "comment"; at: Date; assetId: string; commentId: string; resolved: boolean; label: string; version: number; author: string; isFromAgency: boolean; body: string }
     | { kind: "approval"; at: Date; assetId: string; label: string; version: number; approver: string };
   const timeline: TimelineEntry[] = [
     ...assetList.map<TimelineEntry>((a) => ({
@@ -81,6 +83,8 @@ export default async function ProjectDetail({ params }: Props) {
         kind: "comment" as const,
         at: c.createdAt,
         assetId: c.assetId,
+        commentId: c.id,
+        resolved: c.resolved,
         label: a.label,
         version: a.version,
         author: c.authorName,
@@ -264,18 +268,29 @@ export default async function ProjectDetail({ params }: Props) {
                   )}
                   {e.kind === "comment" && (
                     <div>
-                      <div>
-                        <span className="font-medium">{e.author}</span>
-                        {e.isFromAgency && (
-                          <span className="ml-1 rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium uppercase text-brand-700">
-                            you
-                          </span>
-                        )}{" "}
-                        <span className="text-slate-500">on</span>{" "}
-                        <span className="font-medium">{e.label}</span>{" "}
-                        <span className="text-xs text-slate-400">v{e.version}</span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span>
+                          <span className="font-medium">{e.author}</span>
+                          {e.isFromAgency && (
+                            <span className="ml-1 rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium uppercase text-brand-700">
+                              you
+                            </span>
+                          )}{" "}
+                          <span className="text-slate-500">on</span>{" "}
+                          <span className="font-medium">{e.label}</span>{" "}
+                          <span className="text-xs text-slate-400">v{e.version}</span>
+                        </span>
+                        {!e.isFromAgency && (
+                          <ResolveToggle
+                            commentId={e.commentId}
+                            projectId={project.id}
+                            resolved={e.resolved}
+                          />
+                        )}
                       </div>
-                      <blockquote className="mt-1 border-l-2 border-slate-200 pl-2 text-slate-600">
+                      <blockquote
+                        className={`mt-1 border-l-2 pl-2 ${e.resolved ? "border-emerald-200 text-slate-400 line-through" : "border-slate-200 text-slate-600"}`}
+                      >
                         {e.body.length > 200 ? e.body.slice(0, 200) + "…" : e.body}
                       </blockquote>
                     </div>

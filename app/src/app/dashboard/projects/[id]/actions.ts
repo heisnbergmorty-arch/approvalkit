@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db/client";
-import { projects, assets } from "@/db/schema";
+import { projects, assets, comments } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { requireAgency } from "@/lib/session";
 import { deleteObject } from "@/lib/storage";
@@ -150,3 +150,18 @@ export async function updateProjectMeta(
   revalidatePath(`/dashboard/projects/${id}`);
   return { ok: true };
 }
+
+export async function toggleCommentResolved(commentId: string, projectId: string, resolved: boolean) {
+  const cid = idSchema.parse(commentId);
+  const pid = idSchema.parse(projectId);
+  const { agency } = await requireAgency();
+  // verify the comment belongs to one of this agency's project assets
+  const c = await db.query.comments.findFirst({ where: eq(comments.id, cid), with: { asset: { with: { project: true } } } });
+  if (!c || c.asset?.project?.agencyId !== agency.id || c.asset?.projectId !== pid) {
+    throw new Error('NOT_FOUND');
+  }
+  await db.update(comments).set({ resolved }).where(eq(comments.id, cid));
+  revalidatePath(`/dashboard/projects/${pid}`);
+  return { ok: true };
+}
+
