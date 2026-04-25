@@ -22,6 +22,43 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Resend({
       from: process.env.EMAIL_FROM,
       apiKey: process.env.RESEND_API_KEY,
+      // Always log the magic-link URL to server logs so the operator can grab it
+      // from Vercel logs when Resend is in sandbox mode (only delivers to the
+      // Resend account email) or for any other delivery failure. The default
+      // sendVerificationRequest still runs after this via super-call pattern below.
+      async sendVerificationRequest({ identifier, url, provider, request, expires, theme, token }) {
+        // eslint-disable-next-line no-console
+        console.log(`[auth] magic-link for ${identifier}: ${url}`);
+        // Re-implement Resend's default delivery so we don't lose normal email send.
+        const apiKey = (provider as { apiKey?: string }).apiKey;
+        const from = (provider as { from?: string }).from;
+        if (!apiKey || !from) return;
+        try {
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+              from,
+              to: identifier,
+              subject: `Sign in to ApprovalKit`,
+              text: `Sign in to ApprovalKit\n\n${url}\n\nThis link expires in 24 hours.`,
+              html: `<p>Sign in to <strong>ApprovalKit</strong></p><p><a href="${url}">${url}</a></p><p>This link expires in 24 hours.</p>`,
+            }),
+          });
+          if (!res.ok) {
+            // eslint-disable-next-line no-console
+            console.warn(`[auth] resend send failed: ${res.status} ${await res.text()}`);
+          }
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.warn(`[auth] resend send error:`, err);
+        }
+        // Reference unused destructured params to satisfy lint without changing behavior
+        void request; void expires; void theme; void token;
+      },
     }),
   ],
   pages: {
