@@ -11,6 +11,7 @@ import { SendLinkButton } from "./send-link-button";
 import { AssetNote } from "./asset-note";
 import { DeleteAssetButton } from "./delete-asset-button";
 import { NotifyModeSelector } from "./notify-mode-selector";
+import { EditableProjectHeader } from "./editable-project-header";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -60,10 +61,13 @@ export default async function ProjectDetail({ params }: Props) {
       <Link href="/dashboard" className="text-sm text-slate-500 hover:text-slate-800">← Dashboard</Link>
 
       <header className="mt-4 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">{project.name}</h1>
-          <p className="text-sm text-slate-600">{project.clientName} · {project.clientEmail}</p>
-        </div>
+        <EditableProjectHeader
+          projectId={project.id}
+          name={project.name}
+          clientName={project.clientName}
+          clientEmail={project.clientEmail}
+          description={project.description}
+        />
         <ProjectActions projectId={project.id} status={project.status} />
       </header>
 

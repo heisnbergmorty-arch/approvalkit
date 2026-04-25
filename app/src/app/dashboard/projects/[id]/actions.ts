@@ -119,3 +119,34 @@ export async function updateProjectNotifyMode(
   revalidatePath(`/dashboard/projects/${id}`);
   return { ok: true };
 }
+
+export async function updateProjectMeta(
+  projectId: string,
+  patch: { name?: string; description?: string | null; clientName?: string; clientEmail?: string },
+) {
+  const id = idSchema.parse(projectId);
+  const { agency } = await requireAgency();
+  const update: Record<string, unknown> = {};
+  if (typeof patch.name === "string" && patch.name.trim().length > 1) {
+    update.name = patch.name.trim().slice(0, 120);
+  }
+  if (patch.description !== undefined) {
+    update.description =
+      patch.description && patch.description.trim()
+        ? patch.description.trim().slice(0, 2000)
+        : null;
+  }
+  if (typeof patch.clientName === "string" && patch.clientName.trim().length > 0) {
+    update.clientName = patch.clientName.trim().slice(0, 80);
+  }
+  if (typeof patch.clientEmail === "string" && /.+@.+\..+/.test(patch.clientEmail)) {
+    update.clientEmail = patch.clientEmail.trim().slice(0, 200);
+  }
+  if (Object.keys(update).length === 0) return { ok: false, error: "Nothing to update" };
+  await db
+    .update(projects)
+    .set(update)
+    .where(and(eq(projects.id, id), eq(projects.agencyId, agency.id)));
+  revalidatePath(`/dashboard/projects/${id}`);
+  return { ok: true };
+}
