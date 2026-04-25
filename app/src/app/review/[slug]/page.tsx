@@ -4,6 +4,7 @@ import { eq, and, desc, inArray } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { AssetReviewCard } from "./asset-card";
 import { ReviewFilters } from "./review-filters";
+import { BulkApproveButton } from "./bulk-approve";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -109,6 +110,21 @@ export default async function ReviewPage({ params, searchParams }: Props) {
 
         {counts.all > 0 && (
           <ReviewFilters slug={slug} brandColor={brandColor} counts={counts} active={filter} />
+        )}
+
+        {counts.pending >= 2 && (
+          <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3">
+            <div className="text-sm text-slate-600">
+              <span className="font-medium text-slate-900">{counts.pending} items</span> still need
+              your sign-off. Bulk-approve if you&apos;re happy with everything.
+            </div>
+            <BulkApproveButton
+              reviewSlug={slug}
+              pendingAssetIds={currentAssets.filter((a) => a.status !== "approved").map((a) => a.id)}
+              defaultName={project.clientName}
+              brandColor={brandColor}
+            />
+          </div>
         )}
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
