@@ -32,7 +32,11 @@ export async function GET(req: Request) {
     })
     .from(projects)
     .innerJoin(assets, eq(assets.projectId, projects.id))
-    .where(and(eq(assets.status, "pending"), lt(assets.createdAt, cutoff)))
+    .where(and(
+      eq(assets.status, "pending"),
+      lt(assets.createdAt, cutoff),
+      sql`${projects.notifyMode} != 'off'`,
+    ))
     .groupBy(projects.id);
 
   let sent = 0;

@@ -6,7 +6,7 @@ import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import Link from "next/link";
 import { OnboardingChecklist } from "./onboarding-checklist";
 
-type SearchParams = { view?: string; q?: string };
+type SearchParams = { view?: string; q?: string; sort?: string };
 
 export default async function DashboardPage({
   searchParams,
@@ -16,6 +16,8 @@ export default async function DashboardPage({
   const sp = await searchParams;
   const view = sp.view === "archived" ? "archived" : sp.view === "all" ? "all" : "active";
   const query = (sp.q ?? "").trim().toLowerCase();
+  const sort: "recent" | "oldest_pending" | "name" =
+    sp.sort === "oldest_pending" || sp.sort === "name" ? sp.sort : "recent";
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -131,8 +133,17 @@ export default async function DashboardPage({
         <ViewTab current={view} value="active" label="Active" count={counts.active} />
         <ViewTab current={view} value="archived" label="Archived" count={counts.archived} />
         <ViewTab current={view} value="all" label="All" count={counts.all} />
-        <form className="ml-auto" action="/dashboard">
+        <form className="ml-auto flex gap-2" action="/dashboard">
           {view !== "active" && <input type="hidden" name="view" value={view} />}
+          <select
+            name="sort"
+            defaultValue={sort}
+            className="rounded-full border border-slate-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none"
+          >
+            <option value="recent">Recent activity</option>
+            <option value="oldest_pending">Oldest pending first</option>
+            <option value="name">Name (A-Z)</option>
+          </select>
           <input
             type="search"
             name="q"
@@ -172,7 +183,22 @@ export default async function DashboardPage({
         )
       ) : (
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          {projectList.map((p) => {
+          {(() => {
+            const sorted = [...projectList];
+            if (sort === "name") sorted.sort((a, b) => a.name.localeCompare(b.name));
+            else if (sort === "oldest_pending") {
+              sorted.sort((a, b) => {
+                const ma = perProject.get(a.id);
+                const mb = perProject.get(b.id);
+                const aPending = (ma?.pending ?? 0) > 0;
+                const bPending = (mb?.pending ?? 0) > 0;
+                if (aPending !== bPending) return aPending ? -1 : 1;
+                const at = ma?.lastActivity?.getTime() ?? Infinity;
+                const bt = mb?.lastActivity?.getTime() ?? Infinity;
+                return at - bt;
+              });
+            }
+            return sorted.map((p) => {
             const m = perProject.get(p.id) ?? {
               total: 0,
               pending: 0,
@@ -257,7 +283,8 @@ export default async function DashboardPage({
                 </div>
               </Link>
             );
-          })}
+          });
+          })()}
         </div>
       )}
     </main>
